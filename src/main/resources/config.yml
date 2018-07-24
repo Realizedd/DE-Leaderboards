@@ -1,0 +1,13 @@
+types:
+  HEAD:
+    lines:
+    - '&e%name%'
+    - '&f#%rank%'
+    - '&a%value% %indicator%'
+  HOLOGRAM:
+    header: '&7&m------------&r &eTop &f10 &e%type% &7&m------------&r'
+    format: '&f#%rank% &7- &a%value% %indicator%'
+    footer: '&7&m------------&r &eTop &f10 &e%type% &7&m------------&r'
+    height: 1.0
+  SIGN:
+    line-format: '&f#%rank% &7- &a%value% %indicator%'

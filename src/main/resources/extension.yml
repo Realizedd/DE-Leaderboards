@@ -2,5 +2,5 @@ name: Leaderboards
 version: @VERSION@
 main: me.realized.de.leaderboards.Leaderboards
 authors: [Realized]
-description: Hologram & Head Leaderboards for Duels.
+description: Hologram, Sign, and Head Leaderboard for Duels.
 website: Not released yet
