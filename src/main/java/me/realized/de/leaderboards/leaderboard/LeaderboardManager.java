@@ -6,6 +6,7 @@ import java.util.Map;
 import lombok.Getter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HologramLeaderboard;
+import me.realized.duels.api.Duels;
 import me.realized.duels.api.kit.Kit;
 import me.realized.duels.api.kit.KitManager;
 import me.realized.duels.api.user.UserManager;
@@ -29,7 +30,7 @@ public class LeaderboardManager implements Listener {
     private final Map<String, TopEntry> cache = new HashMap<>();
     private final Map<LeaderboardType, Map<String, Leaderboard>> leaderboards = new HashMap<>();
 
-    public LeaderboardManager(final Leaderboards extension) {
+    public LeaderboardManager(final Leaderboards extension, final Duels api) {
         this.extension = extension;
         this.userManager = extension.getUserManager();
         this.kitManager = extension.getKitManager();
@@ -39,26 +40,29 @@ public class LeaderboardManager implements Listener {
             folder.mkdir();
         }
 
-        final File[] files = folder.listFiles((dir, name) -> name.endsWith(".yml") && name.split("-").length > 1);
+        // Load late to prevent ArmorStand not spawning on first startup
+        api.doSyncAfter(() -> {
+            final File[] files = folder.listFiles((dir, name) -> name.endsWith(".yml") && name.split("-").length > 1);
 
-        if (files != null) {
-            for (final File file : files) {
-                final String[] data = file.getName().replace(".yml", "").split("-");
-                final LeaderboardType type = LeaderboardType.get(data[0]);
+            if (files != null) {
+                for (final File file : files) {
+                    final String[] data = file.getName().replace(".yml", "").split("-");
+                    final LeaderboardType type = LeaderboardType.get(data[0]);
 
-                if (type == null) {
-                    continue;
-                }
+                    if (type == null) {
+                        continue;
+                    }
 
-                final String name = data[1];
+                    final String name = data[1];
 
-                try {
-                    addLeaderboard(type.from(extension, name, file));
-                } catch (Exception ex) {
-                    extension.warn("Failed to load leaderboard '" + name + "' (" + type + "): " + ex.getMessage());
+                    try {
+                        addLeaderboard(type.from(extension, name, file));
+                    } catch (Exception ex) {
+                        extension.warn("Failed to load leaderboard '" + name + "' (" + type + "): " + ex.getMessage());
+                    }
                 }
             }
-        }
+        }, 10L);
     }
 
     public void save() {

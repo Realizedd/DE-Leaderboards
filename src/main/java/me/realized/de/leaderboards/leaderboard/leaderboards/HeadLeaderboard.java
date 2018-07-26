@@ -24,15 +24,24 @@ public class HeadLeaderboard extends AbstractLeaderboard {
     private static final String NO_HEAD = "Leaderboard \'%s\' (type %s) requires a head placed above attached block, but found no head at %s.";
 
     private final int position;
+    private final String headLoading;
+    private final String headNoData;
+    private final List<String> headSignFormat;
 
     public HeadLeaderboard(final Leaderboards extension, final String name, final String dataType, final Location location, final int position) {
         super(extension, LeaderboardType.HEAD, name, dataType, location);
         this.position = position;
+        this.headLoading = config.getHeadLoading();
+        this.headNoData = config.getHeadNoData();
+        this.headSignFormat = config.getHeadSignFormat();
     }
 
     private HeadLeaderboard(final Leaderboards extension, final File file, final String name) {
         super(extension, file, LeaderboardType.HEAD, name);
         this.position = getConfiguration().getInt("position");
+        this.headLoading = getConfiguration().getString("override.loading", config.getHeadLoading());
+        this.headNoData = getConfiguration().getString("override.no-data", config.getHeadNoData());
+        this.headSignFormat = getConfiguration().isList("override.sign-format") ? getConfiguration().getStringList("override.sign-format") : config.getHeadSignFormat();
 
         final Block block = getLocation().getBlock();
 
@@ -43,7 +52,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
 
         final Sign sign = (Sign) block.getState();
         BlockUtil.clear(sign);
-        sign.setLine(0, StringUtil.color("&cLoading..."));
+        sign.setLine(0, StringUtil.color(headLoading));
         sign.update(true);
 
         final org.bukkit.material.Sign materialSign = (org.bukkit.material.Sign) block.getState().getData();
@@ -58,13 +67,8 @@ public class HeadLeaderboard extends AbstractLeaderboard {
 
     @Override
     public void update(final TopEntry entry) {
+        // If null, top is loading
         if (entry == null) {
-            return;
-        }
-
-        final List<Pair<String, Integer>> data = entry.getData();
-
-        if (data.size() <= position) {
             return;
         }
 
@@ -75,6 +79,19 @@ public class HeadLeaderboard extends AbstractLeaderboard {
         }
 
         final Sign sign = (Sign) block.getState();
+        final List<Pair<String, Integer>> data = entry.getData();
+
+        if (data.isEmpty()) {
+            BlockUtil.clear(sign);
+            sign.setLine(0, StringUtil.color(headNoData));
+            sign.update(true);
+            return;
+        }
+
+        if (data.size() <= position) {
+            return;
+        }
+
         final org.bukkit.material.Sign materialSign = (org.bukkit.material.Sign) sign.getData();
         final Block skullBlock = block.getRelative(materialSign.getAttachedFace()).getRelative(BlockFace.UP);
 
@@ -83,7 +100,6 @@ public class HeadLeaderboard extends AbstractLeaderboard {
         }
 
         final Skull skull = (Skull) skullBlock.getState();
-
         final Pair<String, Integer> pair = data.get(position - 1);
         final List<BlockState> blockStates = new ArrayList<>();
 
@@ -92,7 +108,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
             blockStates.add(skull);
         }
 
-        final List<String> format = new ArrayList<>(extension.getHeadSignFormat());
+        final List<String> format = new ArrayList<>(headSignFormat);
         format.replaceAll(s -> s = StringUtil.color(s
             .replace("%rank%", String.valueOf(position)).replace("%name%", pair.getKey())
             .replace("%value%", String.valueOf(pair.getValue())).replace("%identifier%", entry.getIdentifier())

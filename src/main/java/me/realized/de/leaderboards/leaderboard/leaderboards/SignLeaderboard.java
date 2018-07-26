@@ -19,12 +19,28 @@ public class SignLeaderboard extends AbstractLeaderboard {
 
     private static final String NO_SIGN = "Leaderboard \'%s\' (type %s) requires a sign, but found no sign at %s.";
 
+    private final String signLoading;
+    private final String signNoData;
+    private final String signHeader;
+    private final boolean signSpaceBetween;
+    private final String signLineFormat;
+
     public SignLeaderboard(final Leaderboards extension, final String name, final String dataType, final Location location) {
         super(extension, LeaderboardType.SIGN, name, dataType, location);
+        this.signLoading = config.getSignLoading();
+        this.signNoData = config.getSignNoData();
+        this.signHeader = config.getSignHeader();
+        this.signSpaceBetween = config.isSignSpaceBetween();
+        this.signLineFormat = config.getSignLineFormat();
     }
 
     private SignLeaderboard(final Leaderboards extension, final File file, final String name) {
         super(extension, file, LeaderboardType.SIGN, name);
+        this.signLoading = getConfiguration().getString("override.loading", config.getSignLoading());
+        this.signNoData = getConfiguration().getString("override.no-data", config.getSignNoData());
+        this.signHeader = getConfiguration().getString("override.header", config.getSignHeader());
+        this.signSpaceBetween = getConfiguration().getBoolean("override.space-between", config.isSignSpaceBetween());
+        this.signLineFormat = getConfiguration().getString("override.sign-line-format", config.getSignLineFormat());
 
         final Block block = getLocation().getBlock();
 
@@ -39,7 +55,7 @@ public class SignLeaderboard extends AbstractLeaderboard {
                 BlockUtil.clear(sign);
 
                 if (i == 0) {
-                    sign.setLine(0, StringUtil.color("&cLoading..."));
+                    sign.setLine(0, StringUtil.color(signLoading));
                 }
 
                 sign.update(true);
@@ -63,21 +79,29 @@ public class SignLeaderboard extends AbstractLeaderboard {
         }
 
         final List<Pair<String, Integer>> data = entry.getData();
-        final List<Sign> signs = new ArrayList<>();
         Sign sign = (Sign) block.getState();
+
+        if (data.isEmpty()) {
+            BlockUtil.clear(sign);
+            sign.setLine(0, StringUtil.color(signNoData));
+            sign.update(true);
+            return;
+        }
+
+        final List<Sign> signs = new ArrayList<>();
         signs.add(sign);
 
         int line = 1;
-        sign.setLine(0, StringUtil.color(extension.getSignHeader().replace("%type%", entry.getType())));
+        sign.setLine(0, StringUtil.color(signHeader.replace("%type%", entry.getType())));
 
-        if (extension.isSignSpaceBetween()) {
+        if (signSpaceBetween) {
             sign.setLine(1, " ");
             line++;
         }
 
         for (int i = 0; i < data.size(); i++) {
             final Pair<String, Integer> pair = data.get(i);
-            final String text = StringUtil.color(extension.getSignLineFormat()
+            final String text = StringUtil.color(signLineFormat
                 .replace("%rank%", String.valueOf(i + 1)).replace("%name%", pair.getKey())
                 .replace("%value%", String.valueOf(pair.getValue())).replace("%identifier%", entry.getIdentifier()));
             sign.setLine(line, text.length() > 15 ? text.substring(0, 15) : text);

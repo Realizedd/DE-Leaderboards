@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Objects;
 import lombok.Getter;
 import me.realized.de.leaderboards.Leaderboards;
+import me.realized.de.leaderboards.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,6 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public abstract class AbstractLeaderboard implements Leaderboard {
 
     protected final Leaderboards extension;
+    protected final Config config;
     protected final LeaderboardManager leaderboardManager;
 
     @Getter
@@ -33,6 +35,7 @@ public abstract class AbstractLeaderboard implements Leaderboard {
 
     public AbstractLeaderboard(final Leaderboards extension, final LeaderboardType type, final String name, final String dataType, final Location location) {
         this.extension = extension;
+        this.config = extension.getConfiguration();
         this.leaderboardManager = extension.getLeaderboardManager();
         this.type = type;
         this.name = name;
@@ -53,6 +56,7 @@ public abstract class AbstractLeaderboard implements Leaderboard {
 
     public AbstractLeaderboard(final Leaderboards extension, final File file, final LeaderboardType type, final String name) {
         this.extension = extension;
+        this.config = extension.getConfiguration();
         this.leaderboardManager = extension.getLeaderboardManager();
         this.file = file;
         this.type = type;
@@ -76,7 +80,6 @@ public abstract class AbstractLeaderboard implements Leaderboard {
         this.location = new Location(world, locationSection.getDouble("x"), locationSection.getDouble("y"), locationSection.getDouble("z"));
     }
 
-    // TODO: 26/07/2018 Override this method to save additional data & optional messages
     @Override
     public void save() {
         configuration.set("type", type.name());
