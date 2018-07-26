@@ -1,8 +1,8 @@
 package me.realized.de.leaderboards.leaderboard;
 
 import lombok.NonNull;
+import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 
 public interface Leaderboard {
 
@@ -13,7 +13,12 @@ public interface Leaderboard {
     LeaderboardType getType();
 
     @NonNull
+    String getDataType();
+
+    @NonNull
     Location getLocation();
 
-    void save(final ConfigurationSection section);
+    void update(final TopEntry entry);
+
+    void save();
 }
