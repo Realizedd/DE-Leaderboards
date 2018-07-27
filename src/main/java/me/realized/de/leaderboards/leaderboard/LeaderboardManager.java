@@ -5,13 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import me.realized.de.leaderboards.Leaderboards;
+import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HologramLeaderboard;
+import me.realized.de.leaderboards.util.EnumUtil;
+import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.de.leaderboards.util.TextBuilder;
 import me.realized.duels.api.Duels;
 import me.realized.duels.api.kit.Kit;
 import me.realized.duels.api.kit.KitManager;
 import me.realized.duels.api.user.UserManager;
 import me.realized.duels.api.user.UserManager.TopEntry;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,6 +34,8 @@ public class LeaderboardManager implements Listener {
 
     // TODO: 26/07/2018 Cache previous update data and only update if there's a change in data list
     private final Map<String, TopEntry> cache = new HashMap<>();
+
+    @Getter
     private final Map<LeaderboardType, Map<String, Leaderboard>> leaderboards = new HashMap<>();
 
     public LeaderboardManager(final Leaderboards extension, final Duels api) {
@@ -47,13 +55,13 @@ public class LeaderboardManager implements Listener {
             if (files != null) {
                 for (final File file : files) {
                     final String[] data = file.getName().replace(".yml", "").split("-");
-                    final LeaderboardType type = LeaderboardType.get(data[0]);
+                    final LeaderboardType type = EnumUtil.getByName(data[0].toUpperCase(), LeaderboardType.class);
 
                     if (type == null) {
                         continue;
                     }
 
-                    final String name = data[1];
+                    final String name = data[1].toLowerCase();
 
                     try {
                         addLeaderboard(type.from(extension, name, file));
@@ -96,21 +104,43 @@ public class LeaderboardManager implements Listener {
         }));
     }
 
-    public void addLeaderboard(final Leaderboard leaderboard) {
+    public Leaderboard get(final LeaderboardType type, final String name) {
+        final Map<String, Leaderboard> cache;
+        return (cache = leaderboards.get(type)) != null ? cache.get(name) : null;
+    }
+
+    public HeadLeaderboard get(final Sign sign) {
+        final Map<String, Leaderboard> cache = leaderboards.get(LeaderboardType.HEAD);
+
+        if (cache == null || cache.isEmpty()) {
+            return null;
+        }
+
+        final Leaderboard result = cache.values().stream().filter(lb -> lb.getLocation().getBlock().getState().equals(sign)).findFirst().orElse(null);
+        return result != null ? (HeadLeaderboard) result : null;
+    }
+
+    public Leaderboard remove(final LeaderboardType type, final String name) {
+        final Map<String, Leaderboard> cache;
+        return (cache = leaderboards.get(type)) != null ? cache.remove(name) : null;
+    }
+
+    public boolean addLeaderboard(final Leaderboard leaderboard) {
         final LeaderboardType type = leaderboard.getType();
 
         if (!type.getType().isInstance(leaderboard)) {
-            return;
+            return false;
         }
 
         final Map<String, Leaderboard> cache = this.leaderboards.computeIfAbsent(type, result -> new HashMap<>());
         final String name = leaderboard.getName();
 
         if (!cache.isEmpty() && cache.containsKey(name)) {
-            return;
+            return false;
         }
 
         cache.put(name, leaderboard);
+        return true;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -121,7 +151,12 @@ public class LeaderboardManager implements Listener {
 
         if (found != null && !(found instanceof HologramLeaderboard)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("Cannot destroy a leaderboard by hand. Please use /ds lb remove " + found.getType().name() + " " + found.getName());
+
+            final String removeCommand = "/ds lb remove " + found.getType().name() + " " + found.getName();
+            TextBuilder
+                .of("Cannot destroy a leaderboard by hand. Type '" + removeCommand + "' or ")
+                .add(StringUtil.color("&b&nClick Me to Remove!"), Action.RUN_COMMAND, removeCommand)
+                .send(event.getPlayer());
         }
     }
 }

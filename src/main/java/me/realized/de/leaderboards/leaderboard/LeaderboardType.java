@@ -3,7 +3,6 @@ package me.realized.de.leaderboards.leaderboard;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NonNull;
@@ -40,9 +39,5 @@ public enum LeaderboardType {
             ex.printStackTrace();
             return null;
         }
-    }
-
-    public static LeaderboardType get(final String name) {
-        return Arrays.stream(values()).filter(type -> type.name().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 }

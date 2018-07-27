@@ -4,19 +4,25 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.command.commands.CreateCommand;
+import me.realized.de.leaderboards.command.commands.ListCommand;
+import me.realized.de.leaderboards.command.commands.RemoveCommand;
+import me.realized.de.leaderboards.command.commands.SetrankCommand;
 import me.realized.duels.api.command.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class LeaderboardCommand extends SubCommand {
 
-    private final Leaderboards extension;
     private final Map<String, LBCommand> commands = new LinkedHashMap<>();
 
     public LeaderboardCommand(final Leaderboards extension) {
         super("leaderboard", null, null, null, false, 1, "lb");
-        this.extension = extension;
-        register(new CreateCommand(extension));
+        register(
+            new CreateCommand(extension),
+            new SetrankCommand(extension),
+            new RemoveCommand(extension),
+            new ListCommand(extension)
+        );
     }
 
     private void register(final LBCommand... commands) {

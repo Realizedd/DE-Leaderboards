@@ -20,5 +20,7 @@ public interface Leaderboard {
 
     void update(final TopEntry entry);
 
+    void remove();
+
     void save();
 }

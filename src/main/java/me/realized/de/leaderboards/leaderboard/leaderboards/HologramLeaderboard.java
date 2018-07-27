@@ -7,8 +7,8 @@ import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
-import me.realized.duels.api.util.Pair;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -57,7 +57,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             return;
         }
 
-        final List<Pair<String, Integer>> data = entry.getData();
+        final List<TopData> data = entry.getData();
         final Location location = getLocation().clone();
 
         if (data.isEmpty()) {
@@ -69,13 +69,19 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         showLine(0, location, StringUtil.color(hologramHeader.replace("%type%", entry.getType())));
 
         for (int i = 0; i < data.size(); i++) {
-            final Pair<String, Integer> pair = data.get(i);
+            final TopData topData = data.get(i);
             showLine(i + 1, location.subtract(0, space, 0), StringUtil.color(hologramLineFormat
-                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", pair.getKey())
-                .replace("%value%", String.valueOf(pair.getValue())).replace("%identifier%", entry.getIdentifier())));
+                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", topData.getName())
+                .replace("%value%", String.valueOf(topData.getValue())).replace("%identifier%", entry.getIdentifier())));
         }
 
         showLine(data.size() + 1, location.subtract(0, space, 0), StringUtil.color(hologramFooter.replace("%type%", entry.getType())));
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        lines.forEach(Entity::remove);
     }
 
     private void showLine(final int index, final Location location, final String text) {
@@ -96,8 +102,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     @Override
-    public void save() {
-        super.save();
+    public void onRemove() {
         lines.forEach(Entity::remove);
     }
 

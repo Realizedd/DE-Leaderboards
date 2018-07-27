@@ -8,8 +8,8 @@ import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
-import me.realized.duels.api.util.Pair;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -78,7 +78,7 @@ public class SignLeaderboard extends AbstractLeaderboard {
             return;
         }
 
-        final List<Pair<String, Integer>> data = entry.getData();
+        final List<TopData> data = entry.getData();
         Sign sign = (Sign) block.getState();
 
         if (data.isEmpty()) {
@@ -100,10 +100,10 @@ public class SignLeaderboard extends AbstractLeaderboard {
         }
 
         for (int i = 0; i < data.size(); i++) {
-            final Pair<String, Integer> pair = data.get(i);
+            final TopData topData = data.get(i);
             final String text = StringUtil.color(signLineFormat
-                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", pair.getKey())
-                .replace("%value%", String.valueOf(pair.getValue())).replace("%identifier%", entry.getIdentifier()));
+                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", topData.getName())
+                .replace("%value%", String.valueOf(topData.getValue())).replace("%identifier%", entry.getIdentifier()));
             sign.setLine(line, text.length() > 15 ? text.substring(0, 15) : text);
             line++;
 
@@ -121,6 +121,21 @@ public class SignLeaderboard extends AbstractLeaderboard {
         }
 
         signs.forEach(state -> state.update(true));
+    }
+
+    @Override
+    public void onRemove() {
+        final Block block = getLocation().getBlock();
+
+        if (block.getState() instanceof Sign) {
+            final List<Sign> signs = new ArrayList<>();
+            signs.add((Sign) block.getState());
+            signs.addAll(BlockUtil.getBlocksBelow(block.getState(), Sign.class, 2));
+            signs.forEach(sign -> {
+                BlockUtil.clear(sign);
+                sign.update(true);
+            });
+        }
     }
 
     public static SignLeaderboard from(final Leaderboards extension, final String name, final File file) throws IllegalArgumentException {

@@ -34,7 +34,8 @@ public class Leaderboards extends DuelsExtension {
         this.userManager = api.getUserManager();
         this.kitManager = api.getKitManager();
         this.arenaManager = api.getArenaManager();
-        this.configuration = new Config(getConfig());
+
+        this.configuration = new Config(this);
         this.leaderboardManager = new LeaderboardManager(this, api);
         api.registerSubCommand("duels", new LeaderboardCommand(this));
         api.getServer().getPluginManager().registerEvents(leaderboardManager, api);
@@ -52,6 +53,10 @@ public class Leaderboards extends DuelsExtension {
     }
 
     public void warn(final String s) {
-        api.getLogger().warning("[" + getName()  + " Extension] " + s);
+        api.warn("[" + getName()  + " Extension] " + s);
+    }
+
+    public void error(final String s) {
+        api.error("[" + getName()  + " Extension] " + s);
     }
 }

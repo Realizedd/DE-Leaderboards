@@ -2,6 +2,7 @@ package me.realized.de.leaderboards.config;
 
 import java.util.List;
 import lombok.Getter;
+import me.realized.de.leaderboards.Leaderboards;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class Config {
@@ -37,7 +38,8 @@ public class Config {
     @Getter
     private String signLineFormat;
 
-    public Config(final FileConfiguration config) {
+    public Config(final Leaderboards extension) {
+        final FileConfiguration config = extension.getConfig();
         this.headLoading = config.getString("types.HEAD.loading");
         this.headNoData = config.getString("types.HEAD.no-data");
         this.headSignFormat = config.getStringList("types.HEAD.sign-format");

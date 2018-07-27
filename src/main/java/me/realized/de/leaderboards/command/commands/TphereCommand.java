@@ -1,4 +1,3 @@
 package me.realized.de.leaderboards.command.commands;
 
-public class TphereCommand {
-}
+public class TphereCommand {}

@@ -80,6 +80,14 @@ public abstract class AbstractLeaderboard implements Leaderboard {
         this.location = new Location(world, locationSection.getDouble("x"), locationSection.getDouble("y"), locationSection.getDouble("z"));
     }
 
+    public void onRemove() {}
+
+    @Override
+    public void remove() {
+        file.delete();
+        onRemove();
+    }
+
     @Override
     public void save() {
         configuration.set("type", type.name());
