@@ -88,8 +88,14 @@ public class HologramLeaderboard extends AbstractLeaderboard {
 
     @Override
     public void remove() {
-        super.remove();
         lines.forEach(Entity::remove);
+        super.remove();
+    }
+
+    @Override
+    public void save() {
+        lines.forEach(Entity::remove);
+        super.save();
     }
 
     private void showLine(final int index, final Location location, final String text) {
