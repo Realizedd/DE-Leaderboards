@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 public class ListCommand extends LBCommand {
 
     public ListCommand(final Leaderboards extension) {
-        super(extension, "list", "list [hologram|head|sign]", 3, false);
+        super(extension, "list", "list [hologram|head|sign]", "Lists available leaderboards with given type.", 3, false);
     }
 
     @Override

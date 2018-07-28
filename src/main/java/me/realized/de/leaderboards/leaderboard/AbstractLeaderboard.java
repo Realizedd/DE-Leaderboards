@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import lombok.Getter;
+import lombok.Setter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.config.Config;
 import org.bukkit.Bukkit;
@@ -28,7 +29,8 @@ public abstract class AbstractLeaderboard implements Leaderboard {
     @Getter
     private final String dataType;
     @Getter
-    private final Location location;
+    @Setter
+    private Location location;
 
     @Getter
     private final FileConfiguration configuration;
@@ -42,15 +44,6 @@ public abstract class AbstractLeaderboard implements Leaderboard {
         this.dataType = dataType;
         this.location = location;
         this.file = new File(leaderboardManager.getFolder(), type + "-" + name + ".yml");
-
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-
         this.configuration = YamlConfiguration.loadConfiguration(file);
     }
 
@@ -83,6 +76,9 @@ public abstract class AbstractLeaderboard implements Leaderboard {
     public void onRemove() {}
 
     @Override
+    public void teleport(final Location location) {}
+
+    @Override
     public void remove() {
         file.delete();
         onRemove();
@@ -90,6 +86,14 @@ public abstract class AbstractLeaderboard implements Leaderboard {
 
     @Override
     public void save() {
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
         configuration.set("type", type.name());
         configuration.set("name", name);
         configuration.set("data-type", dataType);

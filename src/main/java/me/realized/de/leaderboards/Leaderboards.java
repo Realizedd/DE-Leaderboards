@@ -12,6 +12,9 @@ import me.realized.duels.api.user.UserManager;
 public class Leaderboards extends DuelsExtension {
 
     @Getter
+    private boolean supportsArmorStand;
+
+    @Getter
     private UserManager userManager;
     @Getter
     private KitManager kitManager;
@@ -27,6 +30,7 @@ public class Leaderboards extends DuelsExtension {
     public void onEnable() {
         try {
             Class.forName("org.bukkit.entity.ArmorStand");
+            supportsArmorStand = true;
         } catch (ClassNotFoundException ex) {
             warn("ArmorStand is not supported on this server version. HologramLeaderboard will be disabled.");
         }

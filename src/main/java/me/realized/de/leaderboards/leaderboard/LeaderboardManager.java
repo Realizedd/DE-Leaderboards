@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import me.realized.de.leaderboards.Leaderboards;
+import me.realized.de.leaderboards.config.Lang;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HologramLeaderboard;
 import me.realized.de.leaderboards.util.EnumUtil;
-import me.realized.de.leaderboards.util.StringUtil;
 import me.realized.de.leaderboards.util.TextBuilder;
 import me.realized.duels.api.Duels;
 import me.realized.duels.api.kit.Kit;
@@ -109,6 +109,11 @@ public class LeaderboardManager implements Listener {
         return (cache = leaderboards.get(type)) != null ? cache.get(name) : null;
     }
 
+    public Leaderboard get(final Block block) {
+        return leaderboards.values()
+            .stream().flatMap(map -> map.values().stream()).filter(leaderboard -> leaderboard.getLocation().getBlock().equals(block)).findFirst().orElse(null);
+    }
+
     public HeadLeaderboard get(final Sign sign) {
         final Map<String, Leaderboard> cache = leaderboards.get(LeaderboardType.HEAD);
 
@@ -153,9 +158,9 @@ public class LeaderboardManager implements Listener {
             event.setCancelled(true);
 
             final String removeCommand = "/ds lb remove " + found.getType().name() + " " + found.getName();
+
             TextBuilder
-                .of("Cannot destroy a leaderboard by hand. Type '" + removeCommand + "' or ")
-                .add(StringUtil.color("&b&nClick Me to Remove!"), Action.RUN_COMMAND, removeCommand)
+                .of(Lang.LEADERBOARD_BLOCK_BREAK.format(removeCommand), Action.RUN_COMMAND, removeCommand, null, null)
                 .send(event.getPlayer());
         }
     }

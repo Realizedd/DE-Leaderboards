@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 public class SetrankCommand extends LBCommand {
 
     public SetrankCommand(final Leaderboards extension) {
-        super(extension, "setrank", "setrank [rank]", 3, true);
+        super(extension, "setrank", "setrank [rank]", "Sets the rank of a Head Leaderboard.", 3, true);
     }
 
     @Override

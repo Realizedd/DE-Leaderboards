@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 public class RemoveCommand extends LBCommand {
 
     public RemoveCommand(final Leaderboards extension) {
-        super(extension, "remove", "remove [hologram|head|sign] [name]", 4, false);
+        super(extension, "remove", "remove [hologram|head|sign] [name]", "Removes the leaderboard with type and name.", 4, false);
     }
 
     @Override

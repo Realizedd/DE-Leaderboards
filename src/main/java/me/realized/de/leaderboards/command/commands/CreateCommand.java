@@ -11,6 +11,8 @@ import me.realized.de.leaderboards.leaderboard.leaderboards.SignLeaderboard;
 import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.kit.Kit;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
@@ -19,7 +21,7 @@ import org.bukkit.entity.Player;
 public class CreateCommand extends LBCommand {
 
     public CreateCommand(final Leaderboards extension) {
-        super(extension, "create", "create [hologram|head|sign] [name] [wins|losses|kit]", 5, true);
+        super(extension, "create", "create [hologram|head|sign] [name] [wins|losses|kit]", "Creates a leaderboard with type and name.", 5, true);
     }
 
     @Override
@@ -31,8 +33,24 @@ public class CreateCommand extends LBCommand {
             return;
         }
 
+        if (!extension.isSupportsArmorStand() && type == LeaderboardType.HOLOGRAM) {
+            Lang.UNSUPPORTED.sendTo(sender);
+            return;
+        }
+
         final Player player = (Player) sender;
         final String name = args[3].toLowerCase();
+        final String dataType = StringUtils.join(args, " ", 4, args.length).replace("-", " ");
+
+        if (!dataType.equalsIgnoreCase("wins") && !dataType.equalsIgnoreCase("losses")) {
+            final Kit kit = extension.getKitManager().get(dataType);
+
+            if (kit == null) {
+                Lang.KIT_NOT_FOUND.sendTo(sender, dataType);
+                return;
+            }
+        }
+
         final Leaderboard leaderboard;
         final Location location;
         final Sign sign;
@@ -46,11 +64,11 @@ public class CreateCommand extends LBCommand {
                     return;
                 }
 
-                leaderboard = new SignLeaderboard(extension, name, args[4], location = sign.getLocation().clone());
+                leaderboard = new SignLeaderboard(extension, name, dataType, location = sign.getLocation().clone());
                 break;
             case HOLOGRAM:
                 location = player.getLocation().clone();
-                leaderboard = new HologramLeaderboard(extension, name, args[4], location);
+                leaderboard = new HologramLeaderboard(extension, name, dataType, location);
                 break;
             case HEAD:
                 sign = BlockUtil.getTargetBlock(player, Sign.class, 6);
@@ -60,10 +78,17 @@ public class CreateCommand extends LBCommand {
                     return;
                 }
 
-                leaderboard = new HeadLeaderboard(extension, name, args[4], location = sign.getLocation().clone(), 1);
+                leaderboard = new HeadLeaderboard(extension, name, dataType, location = sign.getLocation().clone(), 1);
                 break;
             default:
                 return;
+        }
+
+        final Leaderboard found = leaderboardManager.get(location.getBlock());
+
+        if (found != null) {
+            Lang.ALREADY_EXISTS_LOCATION.sendTo(sender, found.getName(), found.getType().name(), StringUtil.from(location));
+            return;
         }
 
         if (!leaderboardManager.addLeaderboard(leaderboard)) {

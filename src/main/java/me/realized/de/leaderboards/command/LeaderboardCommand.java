@@ -7,6 +7,9 @@ import me.realized.de.leaderboards.command.commands.CreateCommand;
 import me.realized.de.leaderboards.command.commands.ListCommand;
 import me.realized.de.leaderboards.command.commands.RemoveCommand;
 import me.realized.de.leaderboards.command.commands.SetrankCommand;
+import me.realized.de.leaderboards.command.commands.TpCommand;
+import me.realized.de.leaderboards.command.commands.TphereCommand;
+import me.realized.de.leaderboards.config.Lang;
 import me.realized.duels.api.command.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,7 +24,9 @@ public class LeaderboardCommand extends SubCommand {
             new CreateCommand(extension),
             new SetrankCommand(extension),
             new RemoveCommand(extension),
-            new ListCommand(extension)
+            new ListCommand(extension),
+            new TpCommand(extension),
+            new TphereCommand(extension)
         );
     }
 
@@ -34,9 +39,9 @@ public class LeaderboardCommand extends SubCommand {
     @Override
     public void execute(final CommandSender sender, final String label, final String[] args) {
         if (args.length == getLength()) {
-            sender.sendMessage("---------------------------------");
-            commands.values().forEach(command -> sender.sendMessage("/" + label + " "  + args[0] + " " + command.getUsage()));
-            sender.sendMessage("---------------------------------");
+            Lang.USAGE_HEADER.sendTo(sender);
+            commands.values().forEach(command -> Lang.USAGE_FORMAT.sendTo(sender, label + " " + args[0] + " " + command.getUsage(), command.getDescription()));
+            Lang.USAGE_FOOTER.sendTo(sender);
             return;
         }
 
@@ -44,12 +49,12 @@ public class LeaderboardCommand extends SubCommand {
 
         if (command != null) {
             if (command.isPlayerOnly() && !(sender instanceof Player)) {
-                sender.sendMessage("Player only command");
+                Lang.PLAYER_ONLY.sendTo(sender);
                 return;
             }
 
             if (args.length < command.getLength()) {
-                sender.sendMessage("Usage: /" + label + " "  + args[0] + " " + command.getUsage());
+                Lang.USAGE_FORMAT.sendTo(sender, label + " " + args[0] + " " + command.getUsage(), command.getDescription());
                 return;
             }
 
@@ -57,6 +62,6 @@ public class LeaderboardCommand extends SubCommand {
             return;
         }
 
-        sender.sendMessage("'" + args[1] + "' is not a valid command. Type /duels leaderboard for help.");
+        Lang.INVALID_COMMAND.sendTo(sender, args[1], label + " " + args[0]);
     }
 }

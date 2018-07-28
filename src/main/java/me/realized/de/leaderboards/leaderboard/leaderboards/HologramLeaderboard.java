@@ -48,7 +48,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
                 entity.remove();
             }
         });
-        showLine(0, getLocation(), StringUtil.color(hologramLoading));
+        showLine(0, getLocation().clone(), StringUtil.color(hologramLoading));
     }
 
     @Override
@@ -79,6 +79,11 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     @Override
+    public void teleport(final Location location) {
+        setLocation(location);
+    }
+
+    @Override
     public void remove() {
         super.remove();
         lines.forEach(Entity::remove);
@@ -96,6 +101,10 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             lines.add(armorStand);
         } else {
             armorStand = lines.get(index);
+        }
+
+        if (!armorStand.getLocation().equals(location)) {
+            armorStand.teleport(location);
         }
 
         armorStand.setCustomName(text);
