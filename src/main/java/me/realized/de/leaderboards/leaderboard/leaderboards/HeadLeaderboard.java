@@ -70,12 +70,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
     }
 
     @Override
-    public void update(final TopEntry entry) {
-        // If null, top is loading
-        if (entry == null) {
-            return;
-        }
-
+    public void onUpdate(final TopEntry entry) {
         final Block block = getLocation().getBlock();
 
         if (block.getType() != Material.WALL_SIGN) {

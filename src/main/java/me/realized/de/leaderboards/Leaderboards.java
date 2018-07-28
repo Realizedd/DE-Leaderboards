@@ -60,7 +60,7 @@ public class Leaderboards extends DuelsExtension {
         api.warn("[" + getName()  + " Extension] " + s);
     }
 
-    public void error(final String s) {
-        api.error("[" + getName()  + " Extension] " + s);
+    public void error(final String s, final Throwable thrown) {
+        api.error("[" + getName()  + " Extension] " + s, thrown);
     }
 }

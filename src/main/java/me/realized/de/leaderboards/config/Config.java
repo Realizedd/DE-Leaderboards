@@ -8,35 +8,35 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Config {
 
     @Getter
-    private String headLoading;
+    private final String headLoading;
     @Getter
-    private String headNoData;
+    private final String headNoData;
     @Getter
-    private List<String> headSignFormat;
+    private final List<String> headSignFormat;
 
     @Getter
-    private String hologramLoading;
+    private final String hologramLoading;
     @Getter
-    private String hologramNoData;
+    private final String hologramNoData;
     @Getter
-    private String hologramHeader;
+    private final String hologramHeader;
     @Getter
-    private String hologramLineFormat;
+    private final String hologramLineFormat;
     @Getter
-    private String hologramFooter;
+    private final String hologramFooter;
     @Getter
-    private double spaceBetweenLines;
+    private final double spaceBetweenLines;
 
     @Getter
-    private String signLoading;
+    private final String signLoading;
     @Getter
-    private String signNoData;
+    private final String signNoData;
     @Getter
-    private String signHeader;
+    private final String signHeader;
     @Getter
-    private boolean signSpaceBetween;
+    private final boolean signSpaceBetween;
     @Getter
-    private String signLineFormat;
+    private final String signLineFormat;
 
     public Config(final Leaderboards extension) {
         final FileConfiguration config = extension.getConfig();

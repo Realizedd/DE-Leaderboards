@@ -67,11 +67,7 @@ public class SignLeaderboard extends AbstractLeaderboard {
     }
 
     @Override
-    public void update(final TopEntry entry) {
-        if (entry == null) {
-            return;
-        }
-
+    public void onUpdate(final TopEntry entry) {
         final Block block = getLocation().getBlock();
 
         if (!(block.getState() instanceof Sign)) {

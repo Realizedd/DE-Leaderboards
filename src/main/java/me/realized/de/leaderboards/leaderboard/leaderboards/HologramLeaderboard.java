@@ -52,11 +52,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     @Override
-    public void update(final TopEntry entry) {
-        if (entry == null) {
-            return;
-        }
-
+    public void onUpdate(final TopEntry entry) {
         final List<TopData> data = entry.getData();
         final Location location = getLocation().clone();
 
@@ -81,6 +77,13 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     @Override
     public void teleport(final Location location) {
         setLocation(location);
+
+        final Location newLoc = getLocation().clone();
+        final double space = 0.23 + spaceBetweenLines;
+        lines.forEach(line -> {
+            line.teleport(newLoc);
+            newLoc.subtract(0, space, 0);
+        });
     }
 
     @Override
@@ -101,10 +104,6 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             lines.add(armorStand);
         } else {
             armorStand = lines.get(index);
-        }
-
-        if (!armorStand.getLocation().equals(location)) {
-            armorStand.teleport(location);
         }
 
         armorStand.setCustomName(text);

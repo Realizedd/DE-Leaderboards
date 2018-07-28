@@ -20,7 +20,7 @@ public interface Leaderboard {
 
     void teleport(final Location location);
 
-    void update(final TopEntry entry);
+    void onUpdate(final TopEntry entry);
 
     void remove();
 

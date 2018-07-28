@@ -4,7 +4,7 @@ import java.util.Map;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.command.LBCommand;
 import me.realized.de.leaderboards.config.Lang;
-import me.realized.de.leaderboards.leaderboard.Leaderboard;
+import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.StringUtil;
@@ -25,7 +25,7 @@ public class ListCommand extends LBCommand {
             return;
         }
 
-        final Map<String, Leaderboard> leaderboards = leaderboardManager.getLeaderboards().get(type);
+        final Map<String, AbstractLeaderboard> leaderboards = leaderboardManager.getLeaderboards().get(type);
 
         if (leaderboards == null || leaderboards.isEmpty()) {
             Lang.NO_ACTIVE_LBS.sendTo(sender, args[2]);

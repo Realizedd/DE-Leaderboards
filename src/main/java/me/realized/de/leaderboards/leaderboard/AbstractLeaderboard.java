@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.config.Config;
+import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -18,7 +19,6 @@ public abstract class AbstractLeaderboard implements Leaderboard {
 
     protected final Leaderboards extension;
     protected final Config config;
-    protected final LeaderboardManager leaderboardManager;
 
     @Getter
     private final File file;
@@ -31,26 +31,27 @@ public abstract class AbstractLeaderboard implements Leaderboard {
     @Getter
     @Setter
     private Location location;
-
+    @Getter
+    @Setter
+    private TopEntry cached;
     @Getter
     private final FileConfiguration configuration;
+
 
     public AbstractLeaderboard(final Leaderboards extension, final LeaderboardType type, final String name, final String dataType, final Location location) {
         this.extension = extension;
         this.config = extension.getConfiguration();
-        this.leaderboardManager = extension.getLeaderboardManager();
         this.type = type;
         this.name = name;
         this.dataType = dataType;
         this.location = location;
-        this.file = new File(leaderboardManager.getFolder(), type + "-" + name + ".yml");
+        this.file = new File(extension.getLeaderboardManager().getFolder(), type + "-" + name + ".yml");
         this.configuration = YamlConfiguration.loadConfiguration(file);
     }
 
     public AbstractLeaderboard(final Leaderboards extension, final File file, final LeaderboardType type, final String name) {
         this.extension = extension;
         this.config = extension.getConfiguration();
-        this.leaderboardManager = extension.getLeaderboardManager();
         this.file = file;
         this.type = type;
         this.name = name;
@@ -73,6 +74,17 @@ public abstract class AbstractLeaderboard implements Leaderboard {
         this.location = new Location(world, locationSection.getDouble("x"), locationSection.getDouble("y"), locationSection.getDouble("z"));
     }
 
+    void update(final TopEntry entry) {
+        if (entry == null) {
+            return;
+        }
+
+        if (cached == null || !cached.equals(entry)) {
+            cached = entry;
+            onUpdate(entry);
+        }
+    }
+
     public void onRemove() {}
 
     @Override
@@ -89,23 +101,17 @@ public abstract class AbstractLeaderboard implements Leaderboard {
         if (!file.exists()) {
             try {
                 file.createNewFile();
+                configuration.set("type", type.name());
+                configuration.set("name", name);
+                configuration.set("data-type", dataType);
+                configuration.set("location.world", location.getWorld().getName());
+                configuration.set("location.x", location.getX());
+                configuration.set("location.y", location.getY());
+                configuration.set("location.z", location.getZ());
+                configuration.save(file);
             } catch (IOException ex) {
-                ex.printStackTrace();
+                extension.error("Failed to save leaderboard '" + name + "' (type " + type.name() + ")!", ex);
             }
-        }
-
-        configuration.set("type", type.name());
-        configuration.set("name", name);
-        configuration.set("data-type", dataType);
-        configuration.set("location.world", location.getWorld().getName());
-        configuration.set("location.x", location.getX());
-        configuration.set("location.y", location.getY());
-        configuration.set("location.z", location.getZ());
-
-        try {
-            configuration.save(file);
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
 }

@@ -3,6 +3,7 @@ package me.realized.de.leaderboards.command.commands;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.command.LBCommand;
 import me.realized.de.leaderboards.config.Lang;
+import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.Leaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
@@ -51,7 +52,7 @@ public class CreateCommand extends LBCommand {
             }
         }
 
-        final Leaderboard leaderboard;
+        final AbstractLeaderboard leaderboard;
         final Location location;
         final Sign sign;
 

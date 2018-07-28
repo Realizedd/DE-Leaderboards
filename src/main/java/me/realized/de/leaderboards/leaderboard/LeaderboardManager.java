@@ -25,21 +25,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 public class LeaderboardManager implements Listener {
 
-    private final Leaderboards extension;
     private final UserManager userManager;
     private final KitManager kitManager;
 
     @Getter
     private final File folder;
-
-    // TODO: 26/07/2018 Cache previous update data and only update if there's a change in data list
-    private final Map<String, TopEntry> cache = new HashMap<>();
-
     @Getter
-    private final Map<LeaderboardType, Map<String, Leaderboard>> leaderboards = new HashMap<>();
+    private final Map<LeaderboardType, Map<String, AbstractLeaderboard>> leaderboards = new HashMap<>();
 
     public LeaderboardManager(final Leaderboards extension, final Duels api) {
-        this.extension = extension;
         this.userManager = extension.getUserManager();
         this.kitManager = extension.getKitManager();
         this.folder = new File(extension.getDataFolder(), "leaderboards");
@@ -78,34 +72,34 @@ public class LeaderboardManager implements Listener {
     }
 
     public void update() {
-        final Map<String, TopEntry> data = new HashMap<>();
+        final Map<String, TopEntry> localCache = new HashMap<>();
 
         leaderboards.values().forEach(value -> value.values().forEach(leaderboard -> {
             final String dataType = leaderboard.getDataType();
-            TopEntry cached = data.get(dataType);
+            TopEntry localCached = localCache.get(dataType);
 
-            if (cached == null) {
+            if (localCached == null) {
                 if (dataType.equalsIgnoreCase("wins")) {
-                    cached = userManager.getTopWins();
+                    localCached = userManager.getTopWins();
                 } else if (dataType.equalsIgnoreCase("losses")) {
-                    cached = userManager.getTopLosses();
+                    localCached = userManager.getTopLosses();
                 } else {
                     final Kit kit = kitManager.get(dataType);
 
                     if (kit != null) {
-                        cached = userManager.getTopRatings(kit);
+                        localCached = userManager.getTopRatings(kit);
                     }
                 }
 
-                data.put(dataType, cached);
+                localCache.put(dataType, localCached);
             }
 
-            leaderboard.update(cached);
+            leaderboard.update(localCached);
         }));
     }
 
     public Leaderboard get(final LeaderboardType type, final String name) {
-        final Map<String, Leaderboard> cache;
+        final Map<String, AbstractLeaderboard> cache;
         return (cache = leaderboards.get(type)) != null ? cache.get(name) : null;
     }
 
@@ -115,7 +109,7 @@ public class LeaderboardManager implements Listener {
     }
 
     public HeadLeaderboard get(final Sign sign) {
-        final Map<String, Leaderboard> cache = leaderboards.get(LeaderboardType.HEAD);
+        final Map<String, AbstractLeaderboard> cache = leaderboards.get(LeaderboardType.HEAD);
 
         if (cache == null || cache.isEmpty()) {
             return null;
@@ -126,18 +120,18 @@ public class LeaderboardManager implements Listener {
     }
 
     public Leaderboard remove(final LeaderboardType type, final String name) {
-        final Map<String, Leaderboard> cache;
+        final Map<String, AbstractLeaderboard> cache;
         return (cache = leaderboards.get(type)) != null ? cache.remove(name) : null;
     }
 
-    public boolean addLeaderboard(final Leaderboard leaderboard) {
+    public boolean addLeaderboard(final AbstractLeaderboard leaderboard) {
         final LeaderboardType type = leaderboard.getType();
 
         if (!type.getType().isInstance(leaderboard)) {
             return false;
         }
 
-        final Map<String, Leaderboard> cache = this.leaderboards.computeIfAbsent(type, result -> new HashMap<>());
+        final Map<String, AbstractLeaderboard> cache = this.leaderboards.computeIfAbsent(type, result -> new HashMap<>());
         final String name = leaderboard.getName();
 
         if (!cache.isEmpty() && cache.containsKey(name)) {

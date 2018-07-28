@@ -28,7 +28,7 @@ public enum LeaderboardType {
         this.from = ReflectionUtil.getMethod(type, "from", Leaderboards.class, String.class, File.class);
     }
 
-    public Leaderboard from(@NonNull final Leaderboards extension, @NonNull final String name, @NonNull final File file) {
+    public AbstractLeaderboard from(@NonNull final Leaderboards extension, @NonNull final String name, @NonNull final File file) {
         Objects.requireNonNull(extension, "extension");
         Objects.requireNonNull(name, "name");
         Objects.requireNonNull(file, "file");
