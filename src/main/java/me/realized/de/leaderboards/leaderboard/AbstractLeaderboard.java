@@ -98,20 +98,21 @@ public abstract class AbstractLeaderboard implements Leaderboard {
 
     @Override
     public void save() {
-        if (!file.exists()) {
-            try {
+        try {
+            if (!file.exists()) {
                 file.createNewFile();
-                configuration.set("type", type.name());
-                configuration.set("name", name);
-                configuration.set("data-type", dataType);
-                configuration.set("location.world", location.getWorld().getName());
-                configuration.set("location.x", location.getX());
-                configuration.set("location.y", location.getY());
-                configuration.set("location.z", location.getZ());
-                configuration.save(file);
-            } catch (IOException ex) {
-                extension.error("Failed to save leaderboard '" + name + "' (type " + type.name() + ")!", ex);
             }
+
+            configuration.set("type", type.name());
+            configuration.set("name", name);
+            configuration.set("data-type", dataType);
+            configuration.set("location.world", location.getWorld().getName());
+            configuration.set("location.x", location.getX());
+            configuration.set("location.y", location.getY());
+            configuration.set("location.z", location.getZ());
+            configuration.save(file);
+        } catch (IOException ex) {
+            extension.error("Failed to save leaderboard '" + name + "' (type " + type.name() + ")!", ex);
         }
     }
 }

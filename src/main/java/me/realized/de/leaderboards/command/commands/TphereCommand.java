@@ -23,7 +23,7 @@ public class TphereCommand extends LBCommand {
             return;
         }
 
-        leaderboard.teleport(((Player) sender).getLocation());
+        leaderboard.teleport(((Player) sender).getLocation().clone());
         Lang.TELEPORT_HERE.sendTo(sender, leaderboard.getName());
     }
 }
