@@ -1,20 +1,20 @@
 package me.realized.de.leaderboards.leaderboard;
 
-import lombok.NonNull;
+import javax.annotation.Nonnull;
 import org.bukkit.Location;
 
 public interface Leaderboard {
 
-    @NonNull
+    @Nonnull
     String getName();
 
-    @NonNull
+    @Nonnull
     LeaderboardType getType();
 
-    @NonNull
+    @Nonnull
     String getDataType();
 
-    @NonNull
+    @Nonnull
     Location getLocation();
 
     void teleport(final Location location);

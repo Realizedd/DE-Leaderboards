@@ -7,12 +7,13 @@ import me.realized.de.leaderboards.leaderboard.Leaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.Duels;
 import org.bukkit.command.CommandSender;
 
 public class RemoveCommand extends LBCommand {
 
-    public RemoveCommand(final Leaderboards extension) {
-        super(extension, "remove", "remove [hologram|head|sign] [name]", "Removes the leaderboard with type and name.", 4, false);
+    public RemoveCommand(final Leaderboards extension, final Duels api) {
+        super(extension, api, "remove", "remove [hologram|head|sign] [name]", "Removes the leaderboard with type and name.", 4, false);
     }
 
     @Override

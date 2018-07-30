@@ -8,6 +8,7 @@ import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.Duels;
 import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Location;
@@ -28,16 +29,16 @@ public class HeadLeaderboard extends AbstractLeaderboard {
     private final String headNoData;
     private final List<String> headSignFormat;
 
-    public HeadLeaderboard(final Leaderboards extension, final String name, final String dataType, final Location location, final int rank) {
-        super(extension, LeaderboardType.HEAD, name, dataType, location);
+    public HeadLeaderboard(final Leaderboards extension, final Duels api, final String name, final String dataType, final Location location, final int rank) {
+        super(extension, api, LeaderboardType.HEAD, name, dataType, location);
         this.rank = rank;
         this.headLoading = config.getHeadLoading();
         this.headNoData = config.getHeadNoData();
         this.headSignFormat = config.getHeadSignFormat();
     }
 
-    private HeadLeaderboard(final Leaderboards extension, final File file, final String name) {
-        super(extension, file, LeaderboardType.HEAD, name);
+    private HeadLeaderboard(final Leaderboards extension, final Duels api, final File file, final String name) {
+        super(extension, api, file, LeaderboardType.HEAD, name);
         this.rank = getConfiguration().getInt("rank", 1);
         this.headLoading = getConfiguration().getString("override.loading", config.getHeadLoading());
         this.headNoData = getConfiguration().getString("override.no-data", config.getHeadNoData());
@@ -135,8 +136,8 @@ public class HeadLeaderboard extends AbstractLeaderboard {
         super.save();
     }
 
-    public static HeadLeaderboard from(final Leaderboards extension, final String name, final File file) throws IllegalArgumentException {
-        return new HeadLeaderboard(extension, file, name);
+    public static HeadLeaderboard from(final Leaderboards extension, final Duels api, final String name, final File file) throws IllegalArgumentException {
+        return new HeadLeaderboard(extension, api, file, name);
     }
 }
 

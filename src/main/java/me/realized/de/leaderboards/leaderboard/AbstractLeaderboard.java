@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.config.Config;
+import me.realized.duels.api.Duels;
 import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,6 +19,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public abstract class AbstractLeaderboard implements Leaderboard {
 
     protected final Leaderboards extension;
+    protected final Duels api;
     protected final Config config;
 
     @Getter
@@ -41,8 +43,9 @@ public abstract class AbstractLeaderboard implements Leaderboard {
     private final FileConfiguration configuration;
 
 
-    public AbstractLeaderboard(final Leaderboards extension, final LeaderboardType type, final String name, final String dataType, final Location location) {
+    public AbstractLeaderboard(final Leaderboards extension, final Duels api, final LeaderboardType type, final String name, final String dataType, final Location location) {
         this.extension = extension;
+        this.api = api;
         this.config = extension.getConfiguration();
         this.type = type;
         this.name = name;
@@ -52,8 +55,9 @@ public abstract class AbstractLeaderboard implements Leaderboard {
         this.configuration = YamlConfiguration.loadConfiguration(file);
     }
 
-    public AbstractLeaderboard(final Leaderboards extension, final File file, final LeaderboardType type, final String name) {
+    public AbstractLeaderboard(final Leaderboards extension, final Duels api, final File file, final LeaderboardType type, final String name) {
         this.extension = extension;
+        this.api = api;
         this.config = extension.getConfiguration();
         this.file = file;
         this.type = type;

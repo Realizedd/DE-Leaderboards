@@ -7,6 +7,7 @@ import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.Duels;
 import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Chunk;
@@ -24,13 +25,11 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     private final String hologramFooter;
     private final double spaceBetweenLines;
 
-    private boolean loaded;
+    private final List<ArmorStand> lines = new ArrayList<>();
     private int x, z;
 
-    private final List<ArmorStand> lines = new ArrayList<>();
-
-    public HologramLeaderboard(final Leaderboards extension, final String name, final String dataType, final Location location) {
-        super(extension, LeaderboardType.HOLOGRAM, name, dataType, location);
+    public HologramLeaderboard(final Leaderboards extension, final Duels api, final String name, final String dataType, final Location location) {
+        super(extension, api, LeaderboardType.HOLOGRAM, name, dataType, location);
         this.hologramLoading = config.getHologramLoading();
         this.hologramNoData = config.getHologramNoData();
         this.hologramHeader = config.getHologramHeader();
@@ -41,11 +40,10 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         final Chunk chunk = location.getChunk();
         this.x = chunk.getX();
         this.z = chunk.getZ();
-        this.loaded = true;
     }
 
-    private HologramLeaderboard(final Leaderboards extension, final File file, final String name) {
-        super(extension, file, LeaderboardType.HOLOGRAM, name);
+    private HologramLeaderboard(final Leaderboards extension, final Duels api, final File file, final String name) {
+        super(extension, api, file, LeaderboardType.HOLOGRAM, name);
         this.hologramLoading = getConfiguration().getString("override.loading", config.getHologramLoading());
         this.hologramNoData = getConfiguration().getString("override.no-data", config.getHologramNoData());
         this.hologramHeader = getConfiguration().getString("override.header", config.getHologramHeader());
@@ -53,31 +51,41 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         this.hologramFooter = getConfiguration().getString("override.footer", config.getHologramFooter());
         this.spaceBetweenLines = getConfiguration().getDouble("override.space-between-lines", config.getSpaceBetweenLines());
 
-        final Chunk chunk = getLocation().getChunk();
+        this.x = floor(getLocation().getX()) >> 4;
+        this.z = floor(getLocation().getZ()) >> 4;
 
-        if (!chunk.isLoaded()) {
-            chunk.load();
-        }
+        api.doSyncAfter(() -> {
+            if (!getLocation().getWorld().isChunkLoaded(x, z)) {
+                return;
+            }
 
-        this.x = chunk.getX();
-        this.z = chunk.getZ();
-        this.loaded = true;
+            initiate();
+        }, 10L);
+    }
+
+    private int floor(final double num) {
+        final int floor = (int) num;
+        return (floor == num) ? floor : (floor - (int) (Double.doubleToRawLongBits(num) >>> 63));
+    }
+
+    private void initiate() {
         getLocation().getWorld().getNearbyEntities(getLocation(), 0.5, 10, 0.5).forEach(entity -> {
             if (entity instanceof ArmorStand && !((ArmorStand) entity).isVisible() && entity.isCustomNameVisible()) {
                 entity.remove();
             }
         });
         showLine(0, getLocation().clone(), StringUtil.color(hologramLoading));
+        setChanged(true);
     }
 
     @Override
     protected void onUpdate(final TopEntry entry) {
-        final List<TopData> data = entry.getData();
-        final Location location = getLocation().clone();
-
-        if (!loaded) {
+        if (!getLocation().getWorld().isChunkLoaded(x, z)) {
             return;
         }
+
+        final List<TopData> data = entry.getData();
+        final Location location = getLocation().clone();
 
         if (data.isEmpty()) {
             showLine(0, location, StringUtil.color(hologramNoData));
@@ -119,46 +127,42 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     public void teleport(final Location location) {
         setLocation(location);
         removeAll();
-        lines.clear();
         this.x = location.getChunk().getX();
         this.z = location.getChunk().getZ();
-        loaded = true;
         setChanged(true);
     }
 
     @Override
     public void save() {
         removeAll();
-        lines.clear();
         super.save();
     }
 
     @Override
     public void onRemove() {
         removeAll();
-        lines.clear();
     }
 
-    public void onLoad(final Chunk chunk) {
-        if (chunk.getX() == x && chunk.getZ() == z) {
-            loaded = true;
-            setChanged(true);
-        }
+    public boolean isInChunk(final Chunk chunk) {
+        return chunk.getX() == x && chunk.getZ() == z;
     }
 
-    public void onUnload(final Chunk chunk) {
-        if (chunk.getX() == x && chunk.getZ() == z) {
+    public void onLoad() {
+        initiate();
+    }
+
+    public void onUnload(final List<Entity> entities) {
+        if (lines.stream().anyMatch(entities::contains)) {
             removeAll();
-            lines.clear();
-            loaded = false;
         }
     }
 
     private void removeAll() {
         lines.forEach(Entity::remove);
+        lines.clear();
     }
 
-    public static HologramLeaderboard from(final Leaderboards extension, final String name, final File file) throws IllegalArgumentException {
-        return new HologramLeaderboard(extension, file, name);
+    public static HologramLeaderboard from(final Leaderboards extension, final Duels api, final String name, final File file) throws IllegalArgumentException {
+        return new HologramLeaderboard(extension, api, file, name);
     }
 }

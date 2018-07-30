@@ -1,7 +1,9 @@
 package me.realized.de.leaderboards.leaderboard;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import me.realized.de.leaderboards.Leaderboards;
@@ -20,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -64,7 +67,7 @@ public class LeaderboardManager implements Listener {
                     final String name = data[1].toLowerCase();
 
                     try {
-                        addLeaderboard(type.from(extension, name, file));
+                        addLeaderboard(type.from(extension, api, name, file));
                     } catch (Exception ex) {
                         extension.warn("Failed to load leaderboard '" + name + "' (" + type + "): " + ex.getMessage());
                     }
@@ -184,7 +187,14 @@ public class LeaderboardManager implements Listener {
             return;
         }
 
-        hologramLeaderboards.values().forEach(leaderboard -> ((HologramLeaderboard) leaderboard).onLoad(chunk));
+        hologramLeaderboards.values().forEach(leaderboard -> {
+            final HologramLeaderboard hologramLeaderboard = (HologramLeaderboard) leaderboard;
+
+            if (hologramLeaderboard.isInChunk(chunk)) {
+                hologramLeaderboard.onLoad();
+            }
+        });
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -195,6 +205,14 @@ public class LeaderboardManager implements Listener {
             return;
         }
 
-        hologramLeaderboards.values().forEach(leaderboard -> ((HologramLeaderboard) leaderboard).onUnload(event.getChunk()));
+        final Chunk chunk = event.getChunk();
+        final List<Entity> entities = Lists.newArrayList(chunk.getEntities());
+        hologramLeaderboards.values().forEach(leaderboard -> {
+            final HologramLeaderboard hologramLeaderboard = (HologramLeaderboard) leaderboard;
+
+            if (hologramLeaderboard.isInChunk(chunk)) {
+                hologramLeaderboard.onUnload(entities);
+            }
+        });
     }
 }

@@ -1,5 +1,7 @@
 package me.realized.de.leaderboards;
 
+import java.lang.reflect.Field;
+import java.util.Map;
 import lombok.Getter;
 import me.realized.de.leaderboards.command.LeaderboardCommand;
 import me.realized.de.leaderboards.config.Config;
@@ -36,7 +38,7 @@ public class Leaderboards extends DuelsExtension {
 
         this.configuration = new Config(this);
         this.leaderboardManager = new LeaderboardManager(this, api);
-        api.registerSubCommand("duels", new LeaderboardCommand(this));
+        api.registerSubCommand("duels", new LeaderboardCommand(this, api));
         api.getServer().getPluginManager().registerEvents(leaderboardManager, api);
         api.doSyncRepeat(() -> leaderboardManager.update(), 20L, 20L);
     }
@@ -44,6 +46,19 @@ public class Leaderboards extends DuelsExtension {
     @Override
     public void onDisable() {
         leaderboardManager.save();
+
+        // TEMPORARY: Since I forgot to unregister commands in ExtensionManager...
+        try {
+            final Class<?> MAIN_CLASS = Class.forName("me.realized.duels.DuelsPlugin");
+            final Field COMMANDS = MAIN_CLASS.getDeclaredField("commands");
+            COMMANDS.setAccessible(true);
+            final Class<?> ABSTRACT_COMMAND = Class.forName("me.realized.duels.util.command.AbstractCommand");
+            final Field CHILDREN = ABSTRACT_COMMAND.getDeclaredField("children");
+            CHILDREN.setAccessible(true);
+            final Map commands = ((Map) CHILDREN.get(((Map) COMMANDS.get(api)).get("duels")));
+            commands.remove("leaderboard");
+            commands.remove("lb");
+        } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException ignored) {}
     }
 
     @Override

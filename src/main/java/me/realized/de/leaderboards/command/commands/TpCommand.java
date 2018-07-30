@@ -6,13 +6,14 @@ import me.realized.de.leaderboards.config.Lang;
 import me.realized.de.leaderboards.leaderboard.Leaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.EnumUtil;
+import me.realized.duels.api.Duels;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TpCommand extends LBCommand {
 
-    public TpCommand(final Leaderboards extension) {
-        super(extension, "tp", "tp [type] [name]", "Teleports to the leaderboard with name and type.", 4, true);
+    public TpCommand(final Leaderboards extension, final Duels api) {
+        super(extension, api, "tp", "tp [type] [name]", "Teleports to the leaderboard with name and type.", 4, true);
     }
 
     @Override

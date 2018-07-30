@@ -13,6 +13,7 @@ import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.Duels;
 import me.realized.duels.api.kit.Kit;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -22,8 +23,8 @@ import org.bukkit.entity.Player;
 
 public class CreateCommand extends LBCommand {
 
-    public CreateCommand(final Leaderboards extension) {
-        super(extension, "create", "create [hologram|head|sign] [name] [wins|losses|kit]", "Creates a leaderboard with type and name.", 5, true);
+    public CreateCommand(final Leaderboards extension, final Duels api) {
+        super(extension, api, "create", "create [hologram|head|sign] [name] [wins|losses|kit]", "Creates a leaderboard with type and name.", 5, true);
     }
 
     @Override
@@ -66,11 +67,11 @@ public class CreateCommand extends LBCommand {
                     return;
                 }
 
-                leaderboard = new SignLeaderboard(extension, name, dataType, location = sign.getLocation().clone());
+                leaderboard = new SignLeaderboard(extension, api, name, dataType, location = sign.getLocation().clone());
                 break;
             case HOLOGRAM:
                 location = player.getLocation().clone();
-                leaderboard = new HologramLeaderboard(extension, name, dataType, location);
+                leaderboard = new HologramLeaderboard(extension, api, name, dataType, location);
                 break;
             case HEAD:
                 sign = BlockUtil.getTargetBlock(player, Sign.class, 6);
@@ -80,7 +81,7 @@ public class CreateCommand extends LBCommand {
                     return;
                 }
 
-                leaderboard = new HeadLeaderboard(extension, name, dataType, location = sign.getLocation().clone(), 1);
+                leaderboard = new HeadLeaderboard(extension, api, name, dataType, location = sign.getLocation().clone(), 1);
                 break;
             default:
                 return;

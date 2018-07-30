@@ -8,6 +8,7 @@ import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.Duels;
 import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Location;
@@ -25,8 +26,8 @@ public class SignLeaderboard extends AbstractLeaderboard {
     private final boolean signSpaceBetween;
     private final String signLineFormat;
 
-    public SignLeaderboard(final Leaderboards extension, final String name, final String dataType, final Location location) {
-        super(extension, LeaderboardType.SIGN, name, dataType, location);
+    public SignLeaderboard(final Leaderboards extension, final Duels api, final String name, final String dataType, final Location location) {
+        super(extension, api, LeaderboardType.SIGN, name, dataType, location);
         this.signLoading = config.getSignLoading();
         this.signNoData = config.getSignNoData();
         this.signHeader = config.getSignHeader();
@@ -34,8 +35,8 @@ public class SignLeaderboard extends AbstractLeaderboard {
         this.signLineFormat = config.getSignLineFormat();
     }
 
-    private SignLeaderboard(final Leaderboards extension, final File file, final String name) {
-        super(extension, file, LeaderboardType.SIGN, name);
+    private SignLeaderboard(final Leaderboards extension, final Duels api, final File file, final String name) {
+        super(extension, api, file, LeaderboardType.SIGN, name);
         this.signLoading = getConfiguration().getString("override.loading", config.getSignLoading());
         this.signNoData = getConfiguration().getString("override.no-data", config.getSignNoData());
         this.signHeader = getConfiguration().getString("override.header", config.getSignHeader());
@@ -134,7 +135,7 @@ public class SignLeaderboard extends AbstractLeaderboard {
         }
     }
 
-    public static SignLeaderboard from(final Leaderboards extension, final String name, final File file) throws IllegalArgumentException {
-        return new SignLeaderboard(extension, file, name);
+    public static SignLeaderboard from(final Leaderboards extension, final Duels api, final String name, final File file) throws IllegalArgumentException {
+        return new SignLeaderboard(extension, api, file, name);
     }
 }

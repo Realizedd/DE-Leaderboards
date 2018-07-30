@@ -10,6 +10,7 @@ import me.realized.de.leaderboards.command.commands.SetrankCommand;
 import me.realized.de.leaderboards.command.commands.TpCommand;
 import me.realized.de.leaderboards.command.commands.TphereCommand;
 import me.realized.de.leaderboards.config.Lang;
+import me.realized.duels.api.Duels;
 import me.realized.duels.api.command.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,15 +19,15 @@ public class LeaderboardCommand extends SubCommand {
 
     private final Map<String, LBCommand> commands = new LinkedHashMap<>();
 
-    public LeaderboardCommand(final Leaderboards extension) {
+    public LeaderboardCommand(final Leaderboards extension, final Duels api) {
         super("leaderboard", null, null, null, false, 1, "lb");
         register(
-            new CreateCommand(extension),
-            new SetrankCommand(extension),
-            new RemoveCommand(extension),
-            new ListCommand(extension),
-            new TpCommand(extension),
-            new TphereCommand(extension)
+            new CreateCommand(extension, api),
+            new SetrankCommand(extension, api),
+            new RemoveCommand(extension, api),
+            new ListCommand(extension, api),
+            new TpCommand(extension, api),
+            new TphereCommand(extension, api)
         );
     }
 

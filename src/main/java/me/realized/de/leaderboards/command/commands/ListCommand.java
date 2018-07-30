@@ -8,12 +8,13 @@ import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.StringUtil;
+import me.realized.duels.api.Duels;
 import org.bukkit.command.CommandSender;
 
 public class ListCommand extends LBCommand {
 
-    public ListCommand(final Leaderboards extension) {
-        super(extension, "list", "list [hologram|head|sign]", "Lists available leaderboards with given type.", 3, false);
+    public ListCommand(final Leaderboards extension, final Duels api) {
+        super(extension, api, "list", "list [hologram|head|sign]", "Lists available leaderboards with given type.", 3, false);
     }
 
     @Override
