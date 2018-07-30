@@ -3,16 +3,13 @@ package me.realized.de.leaderboards.leaderboard.leaderboards;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Setter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.BlockUtil;
-import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.StringUtil;
 import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,7 +23,6 @@ public class HeadLeaderboard extends AbstractLeaderboard {
     private static final String NO_SIGN = "Leaderboard \'%s\' (type %s) requires a sign attached to block, but found no wall sign at %s.";
     private static final String NO_HEAD = "Leaderboard \'%s\' (type %s) requires a head placed above attached block, but found no head at %s.";
 
-    @Setter
     private int rank;
     private final String headLoading;
     private final String headNoData;
@@ -69,8 +65,13 @@ public class HeadLeaderboard extends AbstractLeaderboard {
         extension.warn(String.format(NO_HEAD, name, getType().name(), StringUtil.from(skullBlock.getLocation())));
     }
 
+    public void setRank(final int rank) {
+        this.rank = rank;
+        setChanged(true);
+    }
+
     @Override
-    public void onUpdate(final TopEntry entry) {
+    protected void onUpdate(final TopEntry entry) {
         final Block block = getLocation().getBlock();
 
         if (block.getType() != Material.WALL_SIGN) {
@@ -80,14 +81,10 @@ public class HeadLeaderboard extends AbstractLeaderboard {
         final Sign sign = (Sign) block.getState();
         final List<TopData> data = entry.getData();
 
-        if (data.isEmpty()) {
+        if (data.isEmpty() || data.size() < rank) {
             BlockUtil.clear(sign);
             sign.setLine(0, StringUtil.color(headNoData));
             sign.update(true);
-            return;
-        }
-
-        if (data.size() <= rank) {
             return;
         }
 
@@ -99,17 +96,9 @@ public class HeadLeaderboard extends AbstractLeaderboard {
         if (skullBlock.getState() instanceof Skull) {
             final Skull skull = (Skull) skullBlock.getState();
 
-            if (CompatUtil.isPre_1_10()) {
-                if (skull.getOwner() == null || !topData.getName().equals(skull.getOwner())) {
-                    skull.setOwner(topData.getName());
-                    blockStates.add(skull);
-                }
-            } else {
-                if (skull.getOwningPlayer() == null || !topData.getUuid().equals(skull.getOwningPlayer().getUniqueId())) {
-                    skull.setOwningPlayer(Bukkit.getOfflinePlayer(topData.getUuid()));
-                    System.out.println(Bukkit.getOfflinePlayer(topData.getUuid()));
-                    blockStates.add(skull);
-                }
+            if (skull.getOwner() == null || !topData.getName().equals(skull.getOwner())) {
+                skull.setOwner(topData.getName());
+                blockStates.add(skull);
             }
         }
 

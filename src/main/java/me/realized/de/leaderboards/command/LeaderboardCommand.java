@@ -39,9 +39,9 @@ public class LeaderboardCommand extends SubCommand {
     @Override
     public void execute(final CommandSender sender, final String label, final String[] args) {
         if (args.length == getLength()) {
-            Lang.USAGE_HEADER.sendTo(sender);
-            commands.values().forEach(command -> Lang.USAGE_FORMAT.sendTo(sender, label + " " + args[0] + " " + command.getUsage(), command.getDescription()));
-            Lang.USAGE_FOOTER.sendTo(sender);
+            Lang.HELP_HEADER.sendTo(sender);
+            commands.values().forEach(command -> Lang.HELP_FORMAT.sendTo(sender, label + " " + args[0] + " " + command.getUsage(), command.getDescription()));
+            Lang.HELP_FOOTER.sendTo(sender);
             return;
         }
 

@@ -4,15 +4,13 @@ import lombok.Getter;
 import me.realized.de.leaderboards.command.LeaderboardCommand;
 import me.realized.de.leaderboards.config.Config;
 import me.realized.de.leaderboards.leaderboard.LeaderboardManager;
+import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.duels.api.arena.ArenaManager;
 import me.realized.duels.api.extension.DuelsExtension;
 import me.realized.duels.api.kit.KitManager;
 import me.realized.duels.api.user.UserManager;
 
 public class Leaderboards extends DuelsExtension {
-
-    @Getter
-    private boolean supportsArmorStand;
 
     @Getter
     private UserManager userManager;
@@ -28,11 +26,8 @@ public class Leaderboards extends DuelsExtension {
 
     @Override
     public void onEnable() {
-        try {
-            Class.forName("org.bukkit.entity.ArmorStand");
-            supportsArmorStand = true;
-        } catch (ClassNotFoundException ex) {
-            warn("ArmorStand is not supported on this server version. HologramLeaderboard will be disabled.");
+        if (CompatUtil.isPre1_8()) {
+            warn("ArmorStand is not supported on this server version. Hologram Leaderboard will be disabled.");
         }
 
         this.userManager = api.getUserManager();

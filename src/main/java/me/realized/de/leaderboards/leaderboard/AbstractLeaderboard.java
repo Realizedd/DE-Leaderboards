@@ -33,6 +33,9 @@ public abstract class AbstractLeaderboard implements Leaderboard {
     private Location location;
     @Getter
     @Setter
+    private boolean changed;
+    @Getter
+    @Setter
     private TopEntry cached;
     @Getter
     private final FileConfiguration configuration;
@@ -74,18 +77,21 @@ public abstract class AbstractLeaderboard implements Leaderboard {
         this.location = new Location(world, locationSection.getDouble("x"), locationSection.getDouble("y"), locationSection.getDouble("z"));
     }
 
+    protected abstract void onUpdate(final TopEntry entry);
+
     void update(final TopEntry entry) {
         if (entry == null) {
             return;
         }
 
-        if (cached == null || !cached.equals(entry)) {
+        if (changed || cached == null || !cached.equals(entry)) {
             cached = entry;
+            changed = false;
             onUpdate(entry);
         }
     }
 
-    public void onRemove() {}
+    protected void onRemove() {}
 
     @Override
     public void teleport(final Location location) {}

@@ -1,7 +1,6 @@
 package me.realized.de.leaderboards.leaderboard;
 
 import lombok.NonNull;
-import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Location;
 
 public interface Leaderboard {
@@ -19,8 +18,6 @@ public interface Leaderboard {
     Location getLocation();
 
     void teleport(final Location location);
-
-    void onUpdate(final TopEntry entry);
 
     void remove();
 

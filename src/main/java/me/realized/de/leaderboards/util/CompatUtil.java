@@ -13,18 +13,6 @@ public final class CompatUtil {
 
     private CompatUtil() {}
 
-    public static boolean isPre_1_13() {
-        return SUB_VERSION < 13;
-    }
-
-    public static boolean isPre_1_10() {
-        return SUB_VERSION < 10;
-    }
-
-    public static boolean isPre1_9() {
-        return SUB_VERSION < 9;
-    }
-
     public static boolean isPre1_8() {
         return SUB_VERSION < 8;
     }

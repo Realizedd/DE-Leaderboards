@@ -16,15 +16,20 @@ import me.realized.duels.api.kit.KitManager;
 import me.realized.duels.api.user.UserManager;
 import me.realized.duels.api.user.UserManager.TopEntry;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 public class LeaderboardManager implements Listener {
 
+    private final Duels api;
     private final UserManager userManager;
     private final KitManager kitManager;
 
@@ -34,6 +39,7 @@ public class LeaderboardManager implements Listener {
     private final Map<LeaderboardType, Map<String, AbstractLeaderboard>> leaderboards = new HashMap<>();
 
     public LeaderboardManager(final Leaderboards extension, final Duels api) {
+        this.api = api;
         this.userManager = extension.getUserManager();
         this.kitManager = extension.getKitManager();
         this.folder = new File(extension.getDataFolder(), "leaderboards");
@@ -69,6 +75,7 @@ public class LeaderboardManager implements Listener {
 
     public void save() {
         leaderboards.forEach((key, value) -> value.forEach((name, leaderboard) -> leaderboard.save()));
+        leaderboards.clear();
     }
 
     public void update() {
@@ -157,5 +164,37 @@ public class LeaderboardManager implements Listener {
                 .of(Lang.LEADERBOARD_BLOCK_BREAK.format(removeCommand), Action.RUN_COMMAND, removeCommand, null, null)
                 .send(event.getPlayer());
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(final ChunkLoadEvent event) {
+        final Chunk chunk = event.getChunk();
+
+        if (Bukkit.isPrimaryThread()) {
+            handleChunkLoad(chunk);
+        } else {
+            api.doSync(() -> handleChunkLoad(chunk));
+        }
+    }
+
+    private void handleChunkLoad(final Chunk chunk) {
+        final Map<String, AbstractLeaderboard> hologramLeaderboards = leaderboards.get(LeaderboardType.HOLOGRAM);
+
+        if (hologramLeaderboards == null) {
+            return;
+        }
+
+        hologramLeaderboards.values().forEach(leaderboard -> ((HologramLeaderboard) leaderboard).onLoad(chunk));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(final ChunkUnloadEvent event) {
+        final Map<String, AbstractLeaderboard> hologramLeaderboards = leaderboards.get(LeaderboardType.HOLOGRAM);
+
+        if (hologramLeaderboards == null) {
+            return;
+        }
+
+        hologramLeaderboards.values().forEach(leaderboard -> ((HologramLeaderboard) leaderboard).onUnload(event.getChunk()));
     }
 }

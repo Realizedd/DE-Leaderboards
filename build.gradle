@@ -26,15 +26,16 @@ repositories {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
 
-    flatDir {
-        dirs 'libs'
+    maven {
+        name 'jitpack-repo'
+        url 'https://jitpack.io'
     }
 }
 
 dependencies {
     compile 'org.projectlombok:lombok:1.16.20'
     compile 'org.spigotmc:spigot-api:1.13-R0.1-SNAPSHOT'
-    compile name:'duels-api-3.1.0'
+    compile 'com.github.RealizedMC.Duels:duels-api:v3.1.0'
 }
 
 jar {

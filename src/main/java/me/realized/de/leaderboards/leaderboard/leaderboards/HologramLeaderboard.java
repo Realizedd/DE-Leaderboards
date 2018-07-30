@@ -9,6 +9,7 @@ import me.realized.de.leaderboards.leaderboard.LeaderboardType;
 import me.realized.de.leaderboards.util.StringUtil;
 import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -23,6 +24,9 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     private final String hologramFooter;
     private final double spaceBetweenLines;
 
+    private boolean loaded;
+    private int x, z;
+
     private final List<ArmorStand> lines = new ArrayList<>();
 
     public HologramLeaderboard(final Leaderboards extension, final String name, final String dataType, final Location location) {
@@ -33,6 +37,11 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         this.hologramLineFormat = config.getHologramLineFormat();
         this.hologramFooter = config.getHologramFooter();
         this.spaceBetweenLines = config.getSpaceBetweenLines();
+
+        final Chunk chunk = location.getChunk();
+        this.x = chunk.getX();
+        this.z = chunk.getZ();
+        this.loaded = true;
     }
 
     private HologramLeaderboard(final Leaderboards extension, final File file, final String name) {
@@ -43,6 +52,16 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         this.hologramLineFormat = getConfiguration().getString("override.line-format", config.getHologramLineFormat());
         this.hologramFooter = getConfiguration().getString("override.footer", config.getHologramFooter());
         this.spaceBetweenLines = getConfiguration().getDouble("override.space-between-lines", config.getSpaceBetweenLines());
+
+        final Chunk chunk = getLocation().getChunk();
+
+        if (!chunk.isLoaded()) {
+            chunk.load();
+        }
+
+        this.x = chunk.getX();
+        this.z = chunk.getZ();
+        this.loaded = true;
         getLocation().getWorld().getNearbyEntities(getLocation(), 0.5, 10, 0.5).forEach(entity -> {
             if (entity instanceof ArmorStand && !((ArmorStand) entity).isVisible() && entity.isCustomNameVisible()) {
                 entity.remove();
@@ -52,9 +71,13 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     @Override
-    public void onUpdate(final TopEntry entry) {
+    protected void onUpdate(final TopEntry entry) {
         final List<TopData> data = entry.getData();
         final Location location = getLocation().clone();
+
+        if (!loaded) {
+            return;
+        }
 
         if (data.isEmpty()) {
             showLine(0, location, StringUtil.color(hologramNoData));
@@ -74,30 +97,6 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         showLine(data.size() + 1, location.subtract(0, space, 0), StringUtil.color(hologramFooter.replace("%type%", entry.getType())));
     }
 
-    @Override
-    public void teleport(final Location location) {
-        setLocation(location);
-
-        final Location newLoc = getLocation().clone();
-        final double space = 0.23 + spaceBetweenLines;
-        lines.forEach(line -> {
-            line.teleport(newLoc);
-            newLoc.subtract(0, space, 0);
-        });
-    }
-
-    @Override
-    public void remove() {
-        lines.forEach(Entity::remove);
-        super.remove();
-    }
-
-    @Override
-    public void save() {
-        lines.forEach(Entity::remove);
-        super.save();
-    }
-
     private void showLine(final int index, final Location location, final String text) {
         ArmorStand armorStand;
 
@@ -107,6 +106,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             armorStand.setCustomNameVisible(true);
             armorStand.setGravity(false);
             armorStand.setMarker(true);
+            armorStand.setRemoveWhenFarAway(false);
             lines.add(armorStand);
         } else {
             armorStand = lines.get(index);
@@ -116,7 +116,45 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     @Override
+    public void teleport(final Location location) {
+        setLocation(location);
+        removeAll();
+        lines.clear();
+        this.x = location.getChunk().getX();
+        this.z = location.getChunk().getZ();
+        loaded = true;
+        setChanged(true);
+    }
+
+    @Override
+    public void save() {
+        removeAll();
+        lines.clear();
+        super.save();
+    }
+
+    @Override
     public void onRemove() {
+        removeAll();
+        lines.clear();
+    }
+
+    public void onLoad(final Chunk chunk) {
+        if (chunk.getX() == x && chunk.getZ() == z) {
+            loaded = true;
+            setChanged(true);
+        }
+    }
+
+    public void onUnload(final Chunk chunk) {
+        if (chunk.getX() == x && chunk.getZ() == z) {
+            removeAll();
+            lines.clear();
+            loaded = false;
+        }
+    }
+
+    private void removeAll() {
         lines.forEach(Entity::remove);
     }
 

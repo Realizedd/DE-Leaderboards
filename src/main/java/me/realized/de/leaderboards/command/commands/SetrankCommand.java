@@ -19,6 +19,7 @@ public class SetrankCommand extends LBCommand {
     @Override
     public void execute(final CommandSender sender, final String label, final String[] args) {
         final Player player = (Player) sender;
+        player.getNearbyEntities(10, 10, 10).forEach(entity -> player.sendMessage(entity.getType() + " " + entity.getEntityId()));
         final Sign sign = BlockUtil.getTargetBlock(player, Sign.class, 6);
 
         if (sign == null || !((org.bukkit.material.Sign) sign.getData()).isWallSign()) {
@@ -34,7 +35,7 @@ public class SetrankCommand extends LBCommand {
         }
 
         final int rank = Math.min(Math.max(1, NumberUtil.parseInt(args[2]).orElse(1)), 10);
-        leaderboard.setRank(NumberUtil.parseInt(args[2]).orElse(1));
+        leaderboard.setRank(rank);
         Lang.SET_RANK.sendTo(sender, leaderboard.getName(), rank);
     }
 }

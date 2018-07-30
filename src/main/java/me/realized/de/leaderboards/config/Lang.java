@@ -19,9 +19,10 @@ public enum Lang {
     PLAYER_ONLY("&cThis command is player only!"),
     INVALID_COMMAND("&c''{0}'' is not a valid command. Please type &f/{1} &cfor help."),
 
-    USAGE_HEADER("&9&m------------- &fLeaderboards &9&m-------------", false),
-    USAGE_FORMAT("&b/{0} &7- &f{1}", false),
-    USAGE_FOOTER("&9&m----------------------------------------", false),
+    HELP_HEADER("&9&m------------- &fLeaderboards &9&m-------------", false),
+    HELP_FORMAT("&f/{0} &e- &7{1}", false),
+    HELP_FOOTER("&9&m----------------------------------------", false),
+    USAGE_FORMAT("&f/{0} &e- &7{1}"),
     CREATE_LEADERBOARD("Created a leaderboard with name &f{0}&7 and type &e{1} &7at &b{2}&7."),
     SET_RANK_INFO("To change the rank of Head Leaderboard, type &e/ds lb setrank [rank] &7while looking at the sign."),
     SET_RANK("Changed rank of Head Leaderboard &f{0} &7to &a#{1}&7!"),
@@ -35,7 +36,7 @@ public enum Lang {
     private final MessageFormat message;
 
     Lang(final String message, final boolean prefix) {
-        this.message = new MessageFormat(StringUtil.color((prefix ? "&9[Duels Leaderboards] &7" : "") + message));
+        this.message = new MessageFormat(StringUtil.color((prefix ? "&9[Duels] &7" : "") + message));
     }
 
     Lang(final String message) {
