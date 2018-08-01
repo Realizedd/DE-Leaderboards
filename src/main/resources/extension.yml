@@ -3,4 +3,4 @@ version: @VERSION@
 main: me.realized.de.leaderboards.Leaderboards
 authors: [Realized]
 description: Hologram, Sign, and Head Leaderboard for Duels.
-website: Not released yet
+website: https://www.spigotmc.org/resources/duels-extension-leaderboards.59260/
