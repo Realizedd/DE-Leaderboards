@@ -38,6 +38,13 @@ public class Config {
     @Getter
     private final String signLineFormat;
 
+    @Getter
+    private final String placeholderNoRank;
+    @Getter
+    private final String placeholderLoading;
+    @Getter
+    private final String placeholderNoData;
+
     public Config(final Leaderboards extension) {
         final FileConfiguration config = extension.getConfig();
         this.headLoading = config.getString("types.HEAD.loading");
@@ -56,5 +63,9 @@ public class Config {
         this.signHeader = config.getString("types.SIGN.header");
         this.signSpaceBetween = config.getBoolean("types.SIGN.space-between");
         this.signLineFormat = config.getString("types.SIGN.sign-line-format");
+
+        this.placeholderNoRank = config.getString("placeholders.no-rank");
+        this.placeholderLoading = config.getString("placeholders.loading");
+        this.placeholderNoData = config.getString("placeholders.no-data");
     }
 }

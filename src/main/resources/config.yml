@@ -20,3 +20,13 @@ types:
     header: '&fTop &910 &f%type%'
     space-between: true
     sign-line-format: '&e#%rank% %name%'
+
+placeholders:
+  # Define the text to return if rank placeholder is called for player that is not on the leaderboard.
+  no-rank: 'Unranked'
+
+  # Define the text to return if data is still loading for the placeholder.
+  loading: 'Loading...'
+
+  # Define the text to return if no data was found for the placeholder.
+  no-data: 'No data.'

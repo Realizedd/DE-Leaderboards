@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 group 'me.realized.de'
-version '1.0.0-SNAPSHOT'
+version '1.0.1-SNAPSHOT'
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
@@ -27,6 +27,16 @@ repositories {
     }
 
     maven {
+        name 'mvdw-repo'
+        url 'http://repo.mvdw-software.be/content/groups/public/'
+    }
+
+    maven {
+        name 'clip-repo'
+        url 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
+    }
+
+    maven {
         name 'jitpack-repo'
         url 'https://jitpack.io'
     }
@@ -35,7 +45,9 @@ repositories {
 dependencies {
     compile 'org.projectlombok:lombok:1.16.20'
     compile 'org.spigotmc:spigot-api:1.13-R0.1-SNAPSHOT'
-    compile 'com.github.RealizedMC.Duels:duels-api:v3.1.0'
+    compile 'me.clip:placeholderapi:2.8.4'
+    compile ('be.maximvdw:MVdWPlaceholderAPI:2.5.2-SNAPSHOT') { transitive = false }
+    compile 'com.github.RealizedMC.Duels:duels-api:v3.1.2'
 }
 
 jar {
