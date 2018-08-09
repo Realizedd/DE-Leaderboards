@@ -24,7 +24,6 @@ import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 
 public class Leaderboards extends DuelsExtension implements Listener {
 
@@ -96,10 +95,12 @@ public class Leaderboards extends DuelsExtension implements Listener {
         } catch (Exception ignored) {}
     }
 
-    private void doIfFound(final String name, final Runnable action) {
-        final Plugin plugin = api.getServer().getPluginManager().getPlugin(name);
+    public boolean isEnabled(final String name) {
+        return api.getServer().getPluginManager().isPluginEnabled(name);
+    }
 
-        if (plugin == null || !plugin.isEnabled()) {
+    private void doIfFound(final String name, final Runnable action) {
+        if (!isEnabled(name)) {
             return;
         }
 

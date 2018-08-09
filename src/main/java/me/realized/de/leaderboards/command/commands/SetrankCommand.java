@@ -1,8 +1,8 @@
 package me.realized.de.leaderboards.command.commands;
 
+import me.realized.de.leaderboards.Lang;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.command.LBCommand;
-import me.realized.de.leaderboards.config.Lang;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
 import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.NumberUtil;

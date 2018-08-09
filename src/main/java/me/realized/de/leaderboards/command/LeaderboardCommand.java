@@ -2,6 +2,7 @@ package me.realized.de.leaderboards.command;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import me.realized.de.leaderboards.Lang;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.command.commands.CreateCommand;
 import me.realized.de.leaderboards.command.commands.ListCommand;
@@ -9,7 +10,6 @@ import me.realized.de.leaderboards.command.commands.RemoveCommand;
 import me.realized.de.leaderboards.command.commands.SetrankCommand;
 import me.realized.de.leaderboards.command.commands.TpCommand;
 import me.realized.de.leaderboards.command.commands.TphereCommand;
-import me.realized.de.leaderboards.config.Lang;
 import me.realized.duels.api.Duels;
 import me.realized.duels.api.command.SubCommand;
 import org.bukkit.command.CommandSender;

@@ -1,4 +1,4 @@
-package me.realized.de.leaderboards.config;
+package me.realized.de.leaderboards;
 
 import java.text.MessageFormat;
 import me.realized.de.leaderboards.util.StringUtil;

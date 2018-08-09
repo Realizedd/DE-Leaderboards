@@ -1,5 +1,8 @@
 package me.realized.de.leaderboards.leaderboard.leaderboards;
 
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,8 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     private final String hologramLineFormat;
     private final String hologramFooter;
     private final double spaceBetweenLines;
+
+    private Hologram hologram;
 
     private final List<ArmorStand> lines = new ArrayList<>();
     private int x, z;
@@ -74,6 +79,11 @@ public class HologramLeaderboard extends AbstractLeaderboard {
                 entity.remove();
             }
         });
+
+        if (extension.isEnabled("HolographicDisplays")) {
+            this.hologram = HologramsAPI.createHologram(api, getLocation().clone());
+        }
+
         showLine(0, getLocation().clone(), StringUtil.color(hologramLoading));
         setChanged(true);
     }
@@ -83,6 +93,8 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         if (!getLocation().getWorld().isChunkLoaded(x, z)) {
             return;
         }
+
+        hologram.clearLines();
 
         final List<TopData> data = entry.getData();
         final Location location = getLocation().clone();
@@ -106,6 +118,17 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     private void showLine(final int index, final Location location, final String text) {
+        if (hologram != null) {
+            hologram.insertTextLine(index, text);
+
+            final int last = hologram.size() - 1;
+
+            if (last > 0 && ((TextLine) hologram.getLine(last)).getText().equals(StringUtil.color(hologramLoading))) {
+                hologram.removeLine(last);
+            }
+            return;
+        }
+
         ArmorStand armorStand;
 
         if (lines.size() <= index) {
@@ -158,6 +181,10 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     private void removeAll() {
+        if (hologram != null) {
+            hologram.delete();
+        }
+
         lines.forEach(Entity::remove);
         lines.clear();
     }
