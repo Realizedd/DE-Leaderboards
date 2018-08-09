@@ -94,7 +94,9 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             return;
         }
 
-        hologram.clearLines();
+        if (hologram != null) {
+            hologram.clearLines();
+        }
 
         final List<TopData> data = entry.getData();
         final Location location = getLocation().clone();
