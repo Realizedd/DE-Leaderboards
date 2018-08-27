@@ -29,6 +29,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     private final double spaceBetweenLines;
 
     private Hologram hologram;
+    private boolean init;
 
     private final List<ArmorStand> lines = new ArrayList<>();
     private int x, z;
@@ -45,6 +46,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         final Chunk chunk = location.getChunk();
         this.x = chunk.getX();
         this.z = chunk.getZ();
+        this.init = true;
     }
 
     private HologramLeaderboard(final Leaderboards extension, final Duels api, final File file, final String name) {
@@ -80,17 +82,18 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             }
         });
 
-        if (extension.isEnabled("HolographicDisplays")) {
+        if (extension.isEnabled("HolographicDisplays") && hologram == null) {
             this.hologram = HologramsAPI.createHologram(api, getLocation().clone());
         }
 
         showLine(0, getLocation().clone(), StringUtil.color(hologramLoading));
         setChanged(true);
+        init = true;
     }
 
     @Override
     protected void onUpdate(final TopEntry entry) {
-        if (!getLocation().getWorld().isChunkLoaded(x, z)) {
+        if (!init || !getLocation().getWorld().isChunkLoaded(x, z)) {
             return;
         }
 
@@ -150,6 +153,10 @@ public class HologramLeaderboard extends AbstractLeaderboard {
 
     @Override
     public void teleport(final Location location) {
+        if (hologram != null) {
+            hologram.teleport(location);
+        }
+
         setLocation(location);
         removeAll();
         this.x = location.getChunk().getX();

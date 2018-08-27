@@ -42,7 +42,6 @@ public abstract class AbstractLeaderboard implements Leaderboard {
     @Getter
     private final FileConfiguration configuration;
 
-
     public AbstractLeaderboard(final Leaderboards extension, final Duels api, final LeaderboardType type, final String name, final String dataType, final Location location) {
         this.extension = extension;
         this.api = api;

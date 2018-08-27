@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 group 'me.realized.de'
-version '1.0.2-SNAPSHOT'
+version '1.0.3-SNAPSHOT'
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
@@ -49,11 +49,11 @@ repositories {
 
 dependencies {
     compile 'org.projectlombok:lombok:1.16.20'
-    compile 'org.spigotmc:spigot-api:1.13-R0.1-SNAPSHOT'
+    compile 'org.spigotmc:spigot-api:1.13.1-R0.1-SNAPSHOT'
     compile 'me.clip:placeholderapi:2.8.4'
     compile ('be.maximvdw:MVdWPlaceholderAPI:2.5.2-SNAPSHOT') { transitive = false }
     compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.2.7-SNAPSHOT'
-    compile 'com.github.RealizedMC.Duels:duels-api:v3.1.2'
+    compile 'com.github.Realizedd.Duels:duels-api:v3.2.0'
 }
 
 jar {

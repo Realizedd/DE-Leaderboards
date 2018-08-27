@@ -6,15 +6,14 @@ import me.realized.de.leaderboards.command.LBCommand;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
 import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.NumberUtil;
-import me.realized.duels.api.Duels;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class SetrankCommand extends LBCommand {
 
-    public SetrankCommand(final Leaderboards extension, final Duels api) {
-        super(extension, api, "setrank", "setrank [rank]", "Sets the rank of a Head Leaderboard.", 3, true);
+    public SetrankCommand(final Leaderboards extension) {
+        super(extension, "setrank", "setrank [rank]", "Sets the rank of a Head Leaderboard.", 3, true);
     }
 
     @Override

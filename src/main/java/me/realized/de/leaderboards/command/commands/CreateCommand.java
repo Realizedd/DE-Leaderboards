@@ -13,7 +13,6 @@ import me.realized.de.leaderboards.util.BlockUtil;
 import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.StringUtil;
-import me.realized.duels.api.Duels;
 import me.realized.duels.api.kit.Kit;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -23,8 +22,8 @@ import org.bukkit.entity.Player;
 
 public class CreateCommand extends LBCommand {
 
-    public CreateCommand(final Leaderboards extension, final Duels api) {
-        super(extension, api, "create", "create [hologram|head|sign] [name] [wins|losses|kit]", "Creates a leaderboard with type and name.", 5, true);
+    public CreateCommand(final Leaderboards extension) {
+        super(extension, "create", "create [hologram|head|sign] [name] [wins|losses|kit]", "Creates a leaderboard with type and name.", 5, true);
     }
 
     @Override

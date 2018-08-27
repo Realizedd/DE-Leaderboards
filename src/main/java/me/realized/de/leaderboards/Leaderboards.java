@@ -40,7 +40,6 @@ public class Leaderboards extends DuelsExtension implements Listener {
     private LeaderboardManager leaderboardManager;
 
     private final List<Updatable<Kit>> updatables = new ArrayList<>();
-    private int task;
 
     @Override
     public void onEnable() {
@@ -53,11 +52,11 @@ public class Leaderboards extends DuelsExtension implements Listener {
         this.arenaManager = api.getArenaManager();
 
         this.configuration = new Config(this);
-        this.leaderboardManager = new LeaderboardManager(this, api);
-        api.registerSubCommand("duels", new LeaderboardCommand(this, api));
+        this.leaderboardManager = new LeaderboardManager(this);
+        api.registerSubCommand("duels", new LeaderboardCommand(this));
         api.registerListener(leaderboardManager);
         api.registerListener(this);
-        this.task = api.doSyncRepeat(() -> leaderboardManager.update(), 20L, 20L).getTaskId();
+        api.doSyncRepeat(() -> leaderboardManager.update(), 20L, 20L).getTaskId();
         doIfFound("MVdWPlaceholderAPI", () -> register(MVdWPlaceholderHook.class));
         doIfFound("PlaceholderAPI", () -> register(PlaceholderHook.class));
     }
@@ -66,14 +65,11 @@ public class Leaderboards extends DuelsExtension implements Listener {
     public void onDisable() {
         leaderboardManager.save();
         updatables.clear();
-
-        // TODO: 06/08/2018 Automatically cancel tasks on Duels#reload!
-        api.getServer().getScheduler().cancelTask(task);
     }
 
     @Override
     public String getRequiredVersion() {
-        return "3.1.2";
+        return "3.2.0";
     }
 
     public void info(final String s) {

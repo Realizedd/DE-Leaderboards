@@ -42,8 +42,8 @@ public class LeaderboardManager implements Listener {
     @Getter
     private final Map<LeaderboardType, Map<String, AbstractLeaderboard>> leaderboards = new HashMap<>();
 
-    public LeaderboardManager(final Leaderboards extension, final Duels api) {
-        this.api = api;
+    public LeaderboardManager(final Leaderboards extension) {
+        this.api = extension.getApi();
         this.userManager = extension.getUserManager();
         this.kitManager = extension.getKitManager();
         this.folder = new File(extension.getDataFolder(), "leaderboards");

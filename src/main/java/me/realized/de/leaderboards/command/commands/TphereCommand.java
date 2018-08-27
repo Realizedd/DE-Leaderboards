@@ -5,14 +5,13 @@ import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.command.LBCommand;
 import me.realized.de.leaderboards.leaderboard.Leaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
-import me.realized.duels.api.Duels;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class TphereCommand extends LBCommand {
 
-    public TphereCommand(final Leaderboards extension, final Duels api) {
-        super(extension, api, "tphere", "tphere [name]", "Teleports the Hologram Leaderboard with given name to your location.", 3, true);
+    public TphereCommand(final Leaderboards extension) {
+        super(extension, "tphere", "tphere [name]", "Teleports the Hologram Leaderboard with given name to your location.", 3, true);
     }
 
     @Override

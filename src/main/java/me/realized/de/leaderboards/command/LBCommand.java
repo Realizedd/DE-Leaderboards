@@ -23,9 +23,9 @@ public abstract class LBCommand {
     @Getter
     private final boolean playerOnly;
 
-    protected LBCommand(final Leaderboards extension, final Duels api, final String name, final String usage, final String description, final int length, final boolean playerOnly) {
+    protected LBCommand(final Leaderboards extension, final String name, final String usage, final String description, final int length, final boolean playerOnly) {
         this.extension = extension;
-        this.api = api;
+        this.api = extension.getApi();
         this.leaderboardManager = extension.getLeaderboardManager();
         this.name = name;
         this.usage = usage;
