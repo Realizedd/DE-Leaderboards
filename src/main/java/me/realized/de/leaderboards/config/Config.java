@@ -8,6 +8,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Config {
 
     @Getter
+    private final boolean hookHD;
+
+    @Getter
     private final String headLoading;
     @Getter
     private final String headNoData;
@@ -47,6 +50,8 @@ public class Config {
 
     public Config(final Leaderboards extension) {
         final FileConfiguration config = extension.getConfig();
+        this.hookHD = config.getBoolean("hook-into-holographicdisplays", true);
+
         this.headLoading = config.getString("types.HEAD.loading");
         this.headNoData = config.getString("types.HEAD.no-data");
         this.headSignFormat = config.getStringList("types.HEAD.sign-format");

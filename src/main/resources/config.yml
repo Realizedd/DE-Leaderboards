@@ -1,3 +1,7 @@
+# Hooks into HolographicDisplays for hologram leaderboards if available on the server.
+# default: true
+hook-into-holographicdisplays: true
+
 types:
   HEAD:
     loading: '&cLoading...'

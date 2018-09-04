@@ -82,7 +82,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             }
         });
 
-        if (extension.isEnabled("HolographicDisplays") && hologram == null) {
+        if (config.isHookHD() && extension.isEnabled("HolographicDisplays") && hologram == null) {
             this.hologram = HologramsAPI.createHologram(api, getLocation().clone());
         }
 
@@ -97,7 +97,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             return;
         }
 
-        if (hologram != null) {
+        if (config.isHookHD() && hologram != null) {
             hologram.clearLines();
         }
 
@@ -123,7 +123,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     private void showLine(final int index, final Location location, final String text) {
-        if (hologram != null) {
+        if (config.isHookHD() && hologram != null) {
             hologram.insertTextLine(index, text);
 
             final int last = hologram.size() - 1;
@@ -153,7 +153,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
 
     @Override
     public void teleport(final Location location) {
-        if (hologram != null) {
+        if (config.isHookHD() && hologram != null) {
             hologram.teleport(location);
         }
 
@@ -190,7 +190,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
     }
 
     private void removeAll() {
-        if (hologram != null) {
+        if (config.isHookHD() && hologram != null) {
             hologram.delete();
         }
 
