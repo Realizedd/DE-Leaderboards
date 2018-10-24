@@ -40,6 +40,7 @@ public class Leaderboards extends DuelsExtension implements Listener {
     private LeaderboardManager leaderboardManager;
 
     private final List<Updatable<Kit>> updatables = new ArrayList<>();
+    private int updateTask;
 
     @Override
     public void onEnable() {
@@ -56,13 +57,14 @@ public class Leaderboards extends DuelsExtension implements Listener {
         api.registerSubCommand("duels", new LeaderboardCommand(this));
         api.registerListener(leaderboardManager);
         api.registerListener(this);
-        api.doSyncRepeat(() -> leaderboardManager.update(), 20L, 20L).getTaskId();
+        this.updateTask = api.doSyncRepeat(() -> leaderboardManager.update(), 20L, 20L).getTaskId();
         doIfFound("MVdWPlaceholderAPI", () -> register(MVdWPlaceholderHook.class));
         doIfFound("PlaceholderAPI", () -> register(PlaceholderHook.class));
     }
 
     @Override
     public void onDisable() {
+        api.cancelTask(updateTask);
         leaderboardManager.save();
         updatables.clear();
     }

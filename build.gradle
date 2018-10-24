@@ -1,7 +1,8 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 group 'me.realized.de'
-version '1.0.4-SNAPSHOT'
+version '1.0.5-SNAPSHOT'
+
 apply plugin: 'java'
 
 sourceCompatibility = 1.8

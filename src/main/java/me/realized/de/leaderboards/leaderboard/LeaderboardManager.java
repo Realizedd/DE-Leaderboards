@@ -200,7 +200,6 @@ public class LeaderboardManager implements Listener {
                 hologramLeaderboard.onLoad();
             }
         });
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
