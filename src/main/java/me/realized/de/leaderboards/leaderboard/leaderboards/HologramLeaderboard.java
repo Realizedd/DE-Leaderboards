@@ -9,6 +9,7 @@ import java.util.List;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
+import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.StringUtil;
 import me.realized.duels.api.Duels;
 import me.realized.duels.api.user.UserManager.TopData;
@@ -75,12 +76,16 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         return (floor == num) ? floor : (floor - (int) (Double.doubleToRawLongBits(num) >>> 63));
     }
 
+    private double distance2D(Location first, Location second) {
+        final double dX = first.getX() - second.getX();
+        final double dZ = first.getZ() - second.getZ();
+        return Math.sqrt(dX * dX + dZ * dZ);
+    }
+
     private void initiate() {
-        getLocation().getWorld().getNearbyEntities(getLocation(), 0.5, 10, 0.5).forEach(entity -> {
-            if (entity instanceof ArmorStand && !((ArmorStand) entity).isVisible() && entity.isCustomNameVisible()) {
-                entity.remove();
-            }
-        });
+        getLocation().getWorld().getEntitiesByClass(ArmorStand.class).stream()
+            .filter(armorStand -> !armorStand.isVisible() && armorStand.isCustomNameVisible() && distance2D(armorStand.getLocation(), getLocation()) <= 1.0)
+            .forEach(Entity::remove);
 
         if (config.isHookHD() && extension.isEnabled("HolographicDisplays") && hologram == null) {
             this.hologram = HologramsAPI.createHologram(api, getLocation().clone());
@@ -141,7 +146,11 @@ public class HologramLeaderboard extends AbstractLeaderboard {
             armorStand.setVisible(false);
             armorStand.setCustomNameVisible(true);
             armorStand.setGravity(false);
-            armorStand.setMarker(true);
+
+            if (CompatUtil.hasMarker()) {
+                armorStand.setMarker(true);
+            }
+
             armorStand.setRemoveWhenFarAway(false);
             lines.add(armorStand);
         } else {
