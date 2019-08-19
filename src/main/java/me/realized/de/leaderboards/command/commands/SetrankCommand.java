@@ -21,7 +21,7 @@ public class SetrankCommand extends LBCommand {
         final Player player = (Player) sender;
         final Sign sign = BlockUtil.getTargetBlock(player, Sign.class, 6);
 
-        if (sign == null || !((org.bukkit.material.Sign) sign.getData()).isWallSign()) {
+        if (sign == null || !BlockUtil.isWallSign(sign.getType())) {
             Lang.NOT_LOOKING_AT_WALL_SIGN.sendTo(sender);
             return;
         }

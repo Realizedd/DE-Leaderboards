@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 group 'me.realized.de'
-version '1.0.6-SNAPSHOT'
+version '1.0.7'
 
 apply plugin: 'java'
 
@@ -29,7 +29,7 @@ repositories {
 
     maven {
         name 'mvdw-repo'
-        url 'http://repo.mvdw-software.be/content/groups/public/'
+        url 'http://repo.mvdw-software.com/content/groups/public/'
     }
 
     maven {
@@ -50,11 +50,11 @@ repositories {
 
 dependencies {
     compile 'org.projectlombok:lombok:1.16.20'
-    compile 'org.spigotmc:spigot-api:1.13.1-R0.1-SNAPSHOT'
+    compile 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
     compile 'me.clip:placeholderapi:2.8.4'
     compile ('be.maximvdw:MVdWPlaceholderAPI:2.5.2-SNAPSHOT') { transitive = false }
-    compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.2.7-SNAPSHOT'
-    compile 'com.github.Realizedd.Duels:duels-api:v3.2.0'
+    compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.3.0'
+    compile group: 'com.github.Realizedd.Duels', name: 'duels-api', version : '3.3.0'
 }
 
 jar {

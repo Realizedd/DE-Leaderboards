@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 public class CreateCommand extends LBCommand {
 
     public CreateCommand(final Leaderboards extension) {
-        super(extension, "create", "create [hologram|head|sign] [name] [wins|losses|kit]", "Creates a leaderboard with type and name.", 5, true);
+        super(extension, "create", "create [hologram|head|sign] [name] [-|kit|wins|losses]", "Creates a leaderboard with type and name.", 5, true);
     }
 
     @Override
@@ -42,10 +42,10 @@ public class CreateCommand extends LBCommand {
 
         final Player player = (Player) sender;
         final String name = args[3].toLowerCase();
-        final String dataType = StringUtils.join(args, " ", 4, args.length).replace("-", " ");
+        final String dataType = StringUtils.join(args, " ", 4, args.length);
 
-        if (!dataType.equalsIgnoreCase("wins") && !dataType.equalsIgnoreCase("losses")) {
-            final Kit kit = extension.getKitManager().get(dataType);
+        if (!dataType.equalsIgnoreCase("wins") && !dataType.equalsIgnoreCase("losses") && !dataType.equals("-")) {
+            final Kit kit = extension.getKitManager().get(dataType.replace("-", " "));
 
             if (kit == null) {
                 Lang.KIT_NOT_FOUND.sendTo(sender, dataType);
@@ -75,7 +75,7 @@ public class CreateCommand extends LBCommand {
             case HEAD:
                 sign = BlockUtil.getTargetBlock(player, Sign.class, 6);
 
-                if (sign == null || !((org.bukkit.material.Sign) sign.getData()).isWallSign()) {
+                if (sign == null || !BlockUtil.isWallSign(sign.getType())) {
                     Lang.NOT_LOOKING_AT_WALL_SIGN.sendTo(sender);
                     return;
                 }

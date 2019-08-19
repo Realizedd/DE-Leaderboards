@@ -71,7 +71,7 @@ public class Leaderboards extends DuelsExtension implements Listener {
 
     @Override
     public String getRequiredVersion() {
-        return "3.2.0";
+        return "3.3.0";
     }
 
     public void info(final String s) {
@@ -111,7 +111,8 @@ public class Leaderboards extends DuelsExtension implements Listener {
                 return "Player is required";
             }
 
-            final TopEntry entry = getTopByType(identifier.replace("rank_", "").replace("-", " "));
+            final String type = identifier.replace("rank_", "");
+            final TopEntry entry = getTopByType(type.equals("-") ? type : type.replace("-", " "));
 
             if (entry == null) {
                 return StringUtil.color(configuration.getPlaceholderLoading());
@@ -135,7 +136,7 @@ public class Leaderboards extends DuelsExtension implements Listener {
                 return null;
             }
 
-            final TopEntry entry = getTopByType(args[0].replace("-", " "));
+            final TopEntry entry = getTopByType(args[0].equals("-") ? args[0] : args[0].replace("-", " "));
 
             if (entry == null) {
                 return StringUtil.color(configuration.getPlaceholderLoading());
@@ -170,6 +171,8 @@ public class Leaderboards extends DuelsExtension implements Listener {
             return userManager.getTopWins();
         } else if (type.equalsIgnoreCase("losses")) {
             return userManager.getTopLosses();
+        } else if (type.equals("-")) {
+            return userManager.getTopRatings();
         } else {
             final Kit kit = kitManager.get(type);
 

@@ -23,6 +23,10 @@ public final class CompatUtil {
         return SUB_VERSION < 8;
     }
 
+    public static boolean isPre1_14() {
+        return SUB_VERSION < 14;
+    }
+
     public static boolean hasMarker() {
         return MARKER;
     }

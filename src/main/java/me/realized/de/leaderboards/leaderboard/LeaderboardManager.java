@@ -99,6 +99,8 @@ public class LeaderboardManager implements Listener {
                     localCached = userManager.getTopWins();
                 } else if (dataType.equalsIgnoreCase("losses")) {
                     localCached = userManager.getTopLosses();
+                } else if (dataType.equals("-")) {
+                    localCached = userManager.getTopRatings();
                 } else {
                     final Kit kit = kitManager.get(dataType);
 

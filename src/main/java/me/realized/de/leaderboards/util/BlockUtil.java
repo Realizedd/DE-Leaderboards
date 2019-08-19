@@ -2,10 +2,12 @@ package me.realized.de.leaderboards.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
@@ -25,6 +27,18 @@ public final class BlockUtil {
         }
 
         return null;
+    }
+
+    public static boolean isWallSign(final Material material) {
+        return material.name().endsWith("WALL_SIGN");
+    }
+
+    public static BlockFace getFacing(final Sign sign) {
+        if (CompatUtil.isPre1_14()) {
+            return ((org.bukkit.material.Sign) sign.getData()).getAttachedFace();
+        } else {
+            return ((WallSign) sign.getBlockData()).getFacing().getOppositeFace();
+        }
     }
 
     public static void clear(final Sign sign) {

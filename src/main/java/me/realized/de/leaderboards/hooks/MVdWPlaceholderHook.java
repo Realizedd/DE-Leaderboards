@@ -20,6 +20,7 @@ public class MVdWPlaceholderHook implements Updatable<Kit> {
         this.replacer = new PlaceholdersReplacer();
         PlaceholderAPI.registerPlaceholder(api, "duels_rank_wins", replacer);
         PlaceholderAPI.registerPlaceholder(api, "duels_rank_losses", replacer);
+        PlaceholderAPI.registerPlaceholder(api, "duels_rank_-", replacer);
         extension.getKitManager().getKits().forEach(kit -> PlaceholderAPI.registerPlaceholder(api, "duels_rank_" + kit.getName().replace(" ", "-"), replacer));
     }
 

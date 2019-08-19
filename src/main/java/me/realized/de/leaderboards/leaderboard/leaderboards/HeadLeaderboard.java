@@ -12,7 +12,6 @@ import me.realized.duels.api.Duels;
 import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -46,7 +45,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
 
         final Block block = getLocation().getBlock();
 
-        if (block.getType() != Material.WALL_SIGN) {
+        if (!BlockUtil.isWallSign(block.getType())) {
             extension.warn(String.format(NO_SIGN, name, getType().name(), StringUtil.from(getLocation())));
             return;
         }
@@ -56,8 +55,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
         sign.setLine(0, StringUtil.color(headLoading));
         sign.update(true);
 
-        final org.bukkit.material.Sign materialSign = (org.bukkit.material.Sign) block.getState().getData();
-        final Block skullBlock = block.getRelative(materialSign.getAttachedFace()).getRelative(BlockFace.UP);
+        final Block skullBlock = block.getRelative(BlockUtil.getFacing(sign)).getRelative(BlockFace.UP);
 
         if (skullBlock.getState() instanceof Skull) {
             return;
@@ -75,7 +73,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
     protected void onUpdate(final TopEntry entry) {
         final Block block = getLocation().getBlock();
 
-        if (block.getType() != Material.WALL_SIGN) {
+        if (!BlockUtil.isWallSign(block.getType())) {
             return;
         }
 
@@ -89,10 +87,9 @@ public class HeadLeaderboard extends AbstractLeaderboard {
             return;
         }
 
-        final org.bukkit.material.Sign materialSign = (org.bukkit.material.Sign) sign.getData();
         final TopData topData = data.get(rank - 1);
         final List<BlockState> blockStates = new ArrayList<>();
-        final Block skullBlock = block.getRelative(materialSign.getAttachedFace()).getRelative(BlockFace.UP);
+        final Block skullBlock = block.getRelative(BlockUtil.getFacing(sign)).getRelative(BlockFace.UP);
 
         if (skullBlock.getState() instanceof Skull) {
             final Skull skull = (Skull) skullBlock.getState();
@@ -121,7 +118,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
     public void onRemove() {
         final Block block = getLocation().getBlock();
 
-        if (block.getType() != Material.WALL_SIGN) {
+        if (!BlockUtil.isWallSign(block.getType())) {
             return;
         }
 
