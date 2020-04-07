@@ -2,6 +2,23 @@
 # default: true
 hook-into-holographicdisplays: true
 
+# Interval to check '/duel top' for change and update head, hologram, and sign leaderboards accordingly.
+# default: 30
+change-check-interval: 30
+
+# One of the following prefixes will be applied to a player's displayed name on the HOLOGRAM leaderboard if the group name matches.
+# NOTE: Vault is required for this option to work!
+prefixes:
+  enabled: true
+
+  # NOTE: The extension will only check for player's primary group name!
+  groups:
+    owner: '&4[OWNER] '
+    admin: '&c[ADMIN] '
+    moderator: '&e[MOD] '
+    helper: '&a[HELPER] '
+    vip: '&6[VIP] '
+
 types:
   HEAD:
     loading: '&cLoading...'

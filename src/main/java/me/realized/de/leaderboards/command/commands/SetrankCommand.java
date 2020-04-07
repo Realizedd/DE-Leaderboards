@@ -35,6 +35,7 @@ public class SetrankCommand extends LBCommand {
 
         final int rank = Math.min(Math.max(1, NumberUtil.parseInt(args[2]).orElse(1)), 10);
         leaderboard.setRank(rank);
+        extension.getLeaderboardManager().update();
         Lang.SET_RANK.sendTo(sender, leaderboard.getName(), rank);
     }
 }

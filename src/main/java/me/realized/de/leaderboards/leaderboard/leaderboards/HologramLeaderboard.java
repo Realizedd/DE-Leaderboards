@@ -6,6 +6,7 @@ import com.gmail.filoghost.holographicdisplays.api.line.TextLine;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
@@ -96,6 +97,10 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         init = true;
     }
 
+    private String getPrefix(final UUID uuid) {
+        return extension.getVaultHook() != null ? extension.getVaultHook().findPrefix(uuid) : "";
+    }
+
     @Override
     protected void onUpdate(final TopEntry entry) {
         if (!init || !getLocation().getWorld().isChunkLoaded(x, z)) {
@@ -120,7 +125,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         for (int i = 0; i < data.size(); i++) {
             final TopData topData = data.get(i);
             showLine(i + 1, location.subtract(0, space, 0), StringUtil.color(hologramLineFormat
-                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", topData.getName())
+                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", getPrefix(topData.getUuid()) + topData.getName())
                 .replace("%value%", String.valueOf(topData.getValue())).replace("%identifier%", entry.getIdentifier())));
         }
 
@@ -167,6 +172,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         }
 
         setLocation(location);
+        extension.getLeaderboardManager().updateLocation(this);
         removeAll();
         this.x = location.getChunk().getX();
         this.z = location.getChunk().getZ();

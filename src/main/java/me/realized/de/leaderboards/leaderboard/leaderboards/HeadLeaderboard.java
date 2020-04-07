@@ -106,7 +106,7 @@ public class HeadLeaderboard extends AbstractLeaderboard {
             .replace("%value%", String.valueOf(topData.getValue())).replace("%identifier%", entry.getIdentifier())
             .replace("%type%", entry.getType())));
 
-        for (int i = 0; i < (format.size() > 4 ? 4 : format.size()); i++) {
+        for (int i = 0; i < (Math.min(format.size(), 4)); i++) {
             sign.setLine(i, format.get(i));
         }
 

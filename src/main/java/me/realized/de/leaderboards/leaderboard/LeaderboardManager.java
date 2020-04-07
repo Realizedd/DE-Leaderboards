@@ -14,13 +14,11 @@ import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.TextBuilder;
 import me.realized.duels.api.Duels;
-import me.realized.duels.api.kit.Kit;
-import me.realized.duels.api.kit.KitManager;
-import me.realized.duels.api.user.UserManager;
 import me.realized.duels.api.user.UserManager.TopEntry;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
@@ -33,19 +31,18 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 
 public class LeaderboardManager implements Listener {
 
+    private final Leaderboards extension;
     private final Duels api;
-    private final UserManager userManager;
-    private final KitManager kitManager;
 
     @Getter
     private final File folder;
     @Getter
     private final Map<LeaderboardType, Map<String, AbstractLeaderboard>> leaderboards = new HashMap<>();
+    private final Map<Location, AbstractLeaderboard> locations = new HashMap<>();
 
     public LeaderboardManager(final Leaderboards extension) {
+        this.extension = extension;
         this.api = extension.getApi();
-        this.userManager = extension.getUserManager();
-        this.kitManager = extension.getKitManager();
         this.folder = new File(extension.getDataFolder(), "leaderboards");
 
         if (!folder.exists()) {
@@ -85,34 +82,15 @@ public class LeaderboardManager implements Listener {
     public void save() {
         leaderboards.forEach((key, value) -> value.forEach((name, leaderboard) -> leaderboard.save()));
         leaderboards.clear();
+        locations.clear();
     }
 
     public void update() {
-        final Map<String, TopEntry> localCache = new HashMap<>();
+        final Map<String, TopEntry> cache = new HashMap<>();
 
         leaderboards.values().forEach(value -> value.values().forEach(leaderboard -> {
-            final String dataType = leaderboard.getDataType();
-            TopEntry localCached = localCache.get(dataType);
-
-            if (localCached == null) {
-                if (dataType.equalsIgnoreCase("wins")) {
-                    localCached = userManager.getTopWins();
-                } else if (dataType.equalsIgnoreCase("losses")) {
-                    localCached = userManager.getTopLosses();
-                } else if (dataType.equals("-")) {
-                    localCached = userManager.getTopRatings();
-                } else {
-                    final Kit kit = kitManager.get(dataType);
-
-                    if (kit != null) {
-                        localCached = userManager.getTopRatings(kit);
-                    }
-                }
-
-                localCache.put(dataType, localCached);
-            }
-
-            leaderboard.update(localCached);
+            final String type = leaderboard.getDataType();
+            leaderboard.update(cache.computeIfAbsent(type, result -> extension.getTopByType(type)));
         }));
     }
 
@@ -121,25 +99,30 @@ public class LeaderboardManager implements Listener {
         return (cache = leaderboards.get(type)) != null ? cache.get(name) : null;
     }
 
-    public Leaderboard get(final Block block) {
-        return leaderboards.values()
-            .stream().flatMap(map -> map.values().stream()).filter(leaderboard -> leaderboard.getLocation().getBlock().equals(block)).findFirst().orElse(null);
+    public AbstractLeaderboard get(final Block block) {
+        return locations.get(block.getLocation());
     }
 
     public HeadLeaderboard get(final Sign sign) {
-        final Map<String, AbstractLeaderboard> cache = leaderboards.get(LeaderboardType.HEAD);
-
-        if (cache == null || cache.isEmpty()) {
-            return null;
-        }
-
-        final Leaderboard result = cache.values().stream().filter(lb -> lb.getLocation().getBlock().getState().equals(sign)).findFirst().orElse(null);
-        return result != null ? (HeadLeaderboard) result : null;
+        final AbstractLeaderboard leaderboard;
+        return (leaderboard = get(sign.getBlock())) instanceof HeadLeaderboard ? (HeadLeaderboard) leaderboard : null;
     }
 
     public Leaderboard remove(final LeaderboardType type, final String name) {
-        final Map<String, AbstractLeaderboard> cache;
-        return (cache = leaderboards.get(type)) != null ? cache.remove(name) : null;
+        final Map<String, AbstractLeaderboard> cache = leaderboards.get(type);
+
+        if (cache == null) {
+            return null;
+        }
+
+        final AbstractLeaderboard leaderboard = cache.remove(name);
+
+        if (leaderboard == null) {
+            return null;
+        }
+
+        locations.remove(leaderboard.getLocation());
+        return leaderboard;
     }
 
     public boolean addLeaderboard(final AbstractLeaderboard leaderboard) {
@@ -157,14 +140,18 @@ public class LeaderboardManager implements Listener {
         }
 
         cache.put(name, leaderboard);
+        locations.put(leaderboard.getLocation(), leaderboard);
+        update();
         return true;
+    }
+
+    public void updateLocation(final AbstractLeaderboard leaderboard) {
+        locations.put(leaderboard.getLocation(), leaderboard);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void on(final BlockBreakEvent event) {
-        final Block block = event.getBlock();
-        final Leaderboard found = leaderboards.values()
-            .stream().flatMap(map -> map.values().stream()).filter(leaderboard -> block.equals(leaderboard.getLocation().getBlock())).findFirst().orElse(null);
+        final Leaderboard found = get(event.getBlock());
 
         if (found != null && !(found instanceof HologramLeaderboard)) {
             event.setCancelled(true);

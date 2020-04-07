@@ -7,6 +7,7 @@ import me.realized.de.leaderboards.command.LeaderboardCommand;
 import me.realized.de.leaderboards.config.Config;
 import me.realized.de.leaderboards.hooks.MVdWPlaceholderHook;
 import me.realized.de.leaderboards.hooks.PlaceholderHook;
+import me.realized.de.leaderboards.hooks.VaultHook;
 import me.realized.de.leaderboards.leaderboard.LeaderboardManager;
 import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.NumberUtil;
@@ -38,6 +39,8 @@ public class Leaderboards extends DuelsExtension implements Listener {
     private Config configuration;
     @Getter
     private LeaderboardManager leaderboardManager;
+    @Getter
+    private VaultHook vaultHook;
 
     private final List<Updatable<Kit>> updatables = new ArrayList<>();
     private int updateTask;
@@ -57,9 +60,10 @@ public class Leaderboards extends DuelsExtension implements Listener {
         api.registerSubCommand("duels", new LeaderboardCommand(this));
         api.registerListener(leaderboardManager);
         api.registerListener(this);
-        this.updateTask = api.doSyncRepeat(() -> leaderboardManager.update(), 20L, 20L).getTaskId();
+        this.updateTask = api.doSyncRepeat(() -> leaderboardManager.update(), 20L * 5, 20L * configuration.getChangeCheckInterval()).getTaskId();
         doIfFound("MVdWPlaceholderAPI", () -> register(MVdWPlaceholderHook.class));
         doIfFound("PlaceholderAPI", () -> register(PlaceholderHook.class));
+        doIfFound("Vault", () -> this.vaultHook = new VaultHook(this));
     }
 
     @Override
@@ -154,7 +158,7 @@ public class Leaderboards extends DuelsExtension implements Listener {
                 return StringUtil.color(configuration.getPlaceholderNoData());
             }
 
-            final TopData topData = data.get(Math.min(Math.max(1, NumberUtil.parseInt(args[2]).orElse(1)), 10) - 1);
+            final TopData topData = data.get(rank - 1);
 
             if (args[1].equalsIgnoreCase("name")) {
                 return topData.getName();
@@ -166,7 +170,7 @@ public class Leaderboards extends DuelsExtension implements Listener {
         return null;
     }
 
-    private TopEntry getTopByType(final String type) {
+    public TopEntry getTopByType(final String type) {
         if (type.equalsIgnoreCase("wins")) {
             return userManager.getTopWins();
         } else if (type.equalsIgnoreCase("losses")) {

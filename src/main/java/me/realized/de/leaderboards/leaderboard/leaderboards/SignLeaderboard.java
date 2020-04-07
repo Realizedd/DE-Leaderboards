@@ -18,7 +18,7 @@ import org.bukkit.block.Sign;
 
 public class SignLeaderboard extends AbstractLeaderboard {
 
-    private static final String NO_SIGN = "Leaderboard \'%s\' (type %s) requires a sign, but found no sign at %s.";
+    private static final String NO_SIGN = "Leaderboard '%s' (type %s) requires a sign, but found no sign at %s.";
 
     private final String signLoading;
     private final String signNoData;

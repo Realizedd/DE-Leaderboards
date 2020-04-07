@@ -1,14 +1,26 @@
 package me.realized.de.leaderboards.config;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import me.realized.de.leaderboards.Leaderboards;
+import me.realized.de.leaderboards.util.StringUtil;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class Config {
 
     @Getter
     private final boolean hookHD;
+
+    @Getter
+    private final int changeCheckInterval;
+
+    @Getter
+    private final boolean prefixesEnabled;
+    @Getter
+    private final Map<String, String> prefixes;
 
     @Getter
     private final String headLoading;
@@ -51,6 +63,18 @@ public class Config {
     public Config(final Leaderboards extension) {
         final FileConfiguration config = extension.getConfig();
         this.hookHD = config.getBoolean("hook-into-holographicdisplays", true);
+        this.changeCheckInterval = config.getInt("change-check-interval", 60);
+
+        this.prefixesEnabled = config.getBoolean("prefixes.enabled", true);
+        this.prefixes = new HashMap<>();
+
+        final ConfigurationSection prefixes = config.getConfigurationSection("prefixes.groups");
+
+        if (prefixes != null) {
+            for (final String group : prefixes.getKeys(false)) {
+                this.prefixes.put(group.toLowerCase(), StringUtil.color(prefixes.getString(group)));
+            }
+        }
 
         this.headLoading = config.getString("types.HEAD.loading");
         this.headNoData = config.getString("types.HEAD.no-data");

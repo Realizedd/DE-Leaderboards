@@ -24,6 +24,7 @@ public class TphereCommand extends LBCommand {
         }
 
         leaderboard.teleport(((Player) sender).getLocation().clone());
+        extension.getLeaderboardManager().update();
         Lang.TELEPORT_HERE.sendTo(sender, leaderboard.getName());
     }
 }

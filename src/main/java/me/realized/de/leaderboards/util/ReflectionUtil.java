@@ -11,5 +11,13 @@ public final class ReflectionUtil {
         return null;
     }
 
+    public static Class<?> getClassUnsafe(final String name) {
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
     private ReflectionUtil() {}
 }

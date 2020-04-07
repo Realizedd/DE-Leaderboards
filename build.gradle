@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 group 'me.realized.de'
-version '1.0.7'
+version '1.1.0'
 
 apply plugin: 'java'
 
@@ -51,10 +51,11 @@ repositories {
 dependencies {
     compile 'org.projectlombok:lombok:1.16.20'
     compile 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
-    compile 'me.clip:placeholderapi:2.8.4'
-    compile ('be.maximvdw:MVdWPlaceholderAPI:2.5.2-SNAPSHOT') { transitive = false }
+    compile 'me.clip:placeholderapi:2.10.5'
+    compile ('be.maximvdw:MVdWPlaceholderAPI:3.0.1-SNAPSHOT') { transitive = false }
     compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.3.0'
-    compile group: 'com.github.Realizedd.Duels', name: 'duels-api', version : '3.3.0'
+    compile 'com.github.Realizedd.Duels:duels-api:3.3.0'
+    compile 'com.github.MilkBowl:VaultAPI:1.7'
 }
 
 jar {
