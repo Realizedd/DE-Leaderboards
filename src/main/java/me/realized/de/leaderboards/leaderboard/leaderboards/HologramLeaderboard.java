@@ -7,6 +7,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
@@ -97,41 +100,6 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         init = true;
     }
 
-    private String getPrefix(final UUID uuid) {
-        return extension.getVaultHook() != null ? extension.getVaultHook().findPrefix(uuid) : "";
-    }
-
-    @Override
-    protected void onUpdate(final TopEntry entry) {
-        if (!init || !getLocation().getWorld().isChunkLoaded(x, z)) {
-            return;
-        }
-
-        if (config.isHookHD() && hologram != null) {
-            hologram.clearLines();
-        }
-
-        final List<TopData> data = entry.getData();
-        final Location location = getLocation().clone();
-
-        if (data.isEmpty()) {
-            showLine(0, location, StringUtil.color(hologramNoData));
-            return;
-        }
-
-        final double space = 0.23 + spaceBetweenLines;
-        showLine(0, location, StringUtil.color(hologramHeader.replace("%type%", entry.getType())));
-
-        for (int i = 0; i < data.size(); i++) {
-            final TopData topData = data.get(i);
-            showLine(i + 1, location.subtract(0, space, 0), StringUtil.color(hologramLineFormat
-                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", getPrefix(topData.getUuid()) + topData.getName())
-                .replace("%value%", String.valueOf(topData.getValue())).replace("%identifier%", entry.getIdentifier())));
-        }
-
-        showLine(data.size() + 1, location.subtract(0, space, 0), StringUtil.color(hologramFooter.replace("%type%", entry.getType())));
-    }
-
     private void showLine(final int index, final Location location, final String text) {
         if (config.isHookHD() && hologram != null) {
             hologram.insertTextLine(index, text);
@@ -163,6 +131,52 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         }
 
         armorStand.setCustomName(text);
+    }
+
+    private String getPrefix(final UUID uuid) {
+        return extension.getVaultHook() != null ? extension.getVaultHook().findPrefix(uuid) : "";
+    }
+
+    private void showLines(final TopEntry entry, final Location location, final List<PrefixedTopData> data) {
+        final double space = 0.23 + spaceBetweenLines;
+        showLine(0, location, StringUtil.color(hologramHeader.replace("%type%", entry.getType())));
+
+        for (int i = 0; i < data.size(); i++) {
+            final PrefixedTopData topData = data.get(i);
+            showLine(i + 1, location.subtract(0, space, 0), StringUtil.color(hologramLineFormat
+                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", topData.getPrefix() + topData.getName())
+                .replace("%value%", String.valueOf(topData.getValue())).replace("%identifier%", entry.getIdentifier())));
+        }
+
+        showLine(data.size() + 1, location.subtract(0, space, 0), StringUtil.color(hologramFooter.replace("%type%", entry.getType())));
+    }
+
+    @Override
+    protected void onUpdate(final TopEntry entry) {
+        if (!init || !getLocation().getWorld().isChunkLoaded(x, z)) {
+            return;
+        }
+
+        if (config.isHookHD() && hologram != null) {
+            hologram.clearLines();
+        }
+
+        final List<PrefixedTopData> data = entry.getData().stream().map(PrefixedTopData::new).collect(Collectors.toList());
+        final Location location = getLocation().clone();
+
+        if (data.isEmpty()) {
+            showLine(0, location, StringUtil.color(hologramNoData));
+            return;
+        }
+
+        if (config.isPrefixesEnabled()) {
+            api.doAsync(() -> {
+                data.forEach(topData -> topData.setPrefix(getPrefix(topData.getUuid())));
+                api.doSync(() -> showLines(entry, location, data));
+            });
+        } else {
+            showLines(entry, location, data);
+        }
     }
 
     @Override
@@ -215,5 +229,25 @@ public class HologramLeaderboard extends AbstractLeaderboard {
 
     public static HologramLeaderboard from(final Leaderboards extension, final Duels api, final String name, final File file) throws IllegalArgumentException {
         return new HologramLeaderboard(extension, api, file, name);
+    }
+
+    private static class PrefixedTopData {
+
+        @Getter
+        private final UUID uuid;
+        @Getter
+        private final String name;
+        @Getter
+        private final int value;
+
+        @Getter
+        @Setter
+        private String prefix;
+
+        public PrefixedTopData(final TopData data) {
+            this.uuid = data.getUuid();
+            this.name = data.getName();
+            this.value = data.getValue();
+        }
     }
 }
