@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.Setter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.AbstractLeaderboard;
 import me.realized.de.leaderboards.leaderboard.LeaderboardType;
@@ -144,8 +142,8 @@ public class HologramLeaderboard extends AbstractLeaderboard {
         for (int i = 0; i < data.size(); i++) {
             final PrefixedTopData topData = data.get(i);
             showLine(i + 1, location.subtract(0, space, 0), StringUtil.color(hologramLineFormat
-                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", topData.getPrefix() + topData.getName())
-                .replace("%value%", String.valueOf(topData.getValue())).replace("%identifier%", entry.getIdentifier())));
+                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", (topData.prefix != null ? topData.prefix : "") + topData.name)
+                .replace("%value%", String.valueOf(topData.value)).replace("%identifier%", entry.getIdentifier())));
         }
 
         showLine(data.size() + 1, location.subtract(0, space, 0), StringUtil.color(hologramFooter.replace("%type%", entry.getType())));
@@ -171,7 +169,7 @@ public class HologramLeaderboard extends AbstractLeaderboard {
 
         if (config.isPrefixesEnabled()) {
             api.doAsync(() -> {
-                data.forEach(topData -> topData.setPrefix(getPrefix(topData.getUuid())));
+                data.forEach(topData -> topData.prefix = getPrefix(topData.uuid));
                 api.doSync(() -> showLines(entry, location, data));
             });
         } else {
@@ -233,15 +231,10 @@ public class HologramLeaderboard extends AbstractLeaderboard {
 
     private static class PrefixedTopData {
 
-        @Getter
         private final UUID uuid;
-        @Getter
         private final String name;
-        @Getter
         private final int value;
 
-        @Getter
-        @Setter
         private String prefix;
 
         public PrefixedTopData(final TopData data) {
