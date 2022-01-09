@@ -4,7 +4,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import lombok.Getter;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
@@ -23,13 +22,13 @@ public enum LeaderboardType {
     private final Class<? extends AbstractLeaderboard> type;
     private final Method from;
 
-    LeaderboardType(@Nonnull final Class<? extends AbstractLeaderboard> type) {
+    LeaderboardType(final Class<? extends AbstractLeaderboard> type) {
         Objects.requireNonNull(type, "type");
         this.type = type;
         this.from = ReflectionUtil.getMethod(type, "from", Leaderboards.class, Duels.class, String.class, File.class);
     }
 
-    public AbstractLeaderboard from(@Nonnull final Leaderboards extension, @Nonnull final Duels api, @Nonnull final String name, @Nonnull final File file)
+    public AbstractLeaderboard from(final Leaderboards extension, final Duels api, final String name, final File file)
         throws InvocationTargetException, IllegalAccessException {
         Objects.requireNonNull(extension, "extension");
         Objects.requireNonNull(api, "api");

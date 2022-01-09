@@ -141,9 +141,13 @@ public class HologramLeaderboard extends AbstractLeaderboard {
 
         for (int i = 0; i < data.size(); i++) {
             final PrefixedTopData topData = data.get(i);
-            showLine(i + 1, location.subtract(0, space, 0), StringUtil.color(hologramLineFormat
-                .replace("%rank%", String.valueOf(i + 1)).replace("%name%", (topData.prefix != null ? topData.prefix : "") + topData.name)
-                .replace("%value%", String.valueOf(topData.value)).replace("%identifier%", entry.getIdentifier())));
+            final int rank = i + 1;
+
+            showLine(rank, location.subtract(0, space, 0), StringUtil.color(hologramLineFormat
+                .replace("%rank%", String.valueOf(rank))
+                .replace("%name%", (topData.prefix != null ? topData.prefix : "") + topData.name)
+                .replace("%value%", String.valueOf(topData.value))
+                .replace("%identifier%", entry.getIdentifier())));
         }
 
         showLine(data.size() + 1, location.subtract(0, space, 0), StringUtil.color(hologramFooter.replace("%type%", entry.getType())));

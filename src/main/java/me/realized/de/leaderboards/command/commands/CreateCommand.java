@@ -10,7 +10,6 @@ import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HologramLeaderboard;
 import me.realized.de.leaderboards.leaderboard.leaderboards.SignLeaderboard;
 import me.realized.de.leaderboards.util.BlockUtil;
-import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.StringUtil;
 import me.realized.duels.api.kit.Kit;
@@ -32,11 +31,6 @@ public class CreateCommand extends LBCommand {
 
         if (type == null) {
             Lang.INVALID_LEADERBOARD_TYPE.sendTo(sender, args[2], EnumUtil.getNames(LeaderboardType.class));
-            return;
-        }
-
-        if (CompatUtil.isPre1_8() && type == LeaderboardType.HOLOGRAM) {
-            Lang.UNSUPPORTED.sendTo(sender);
             return;
         }
 

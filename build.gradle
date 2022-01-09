@@ -1,11 +1,12 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 group 'me.realized.de'
-version '1.1.1'
+version '1.1.2'
 
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
@@ -28,33 +29,34 @@ repositories {
     }
 
     maven {
-        name 'mvdw-repo'
-        url 'http://repo.mvdw-software.com/content/groups/public/'
-    }
-
-    maven {
         name 'clip-repo'
         url 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
 
     maven {
-        name 'filoghost-repo'
-        url 'https://ci.filoghost.me/plugin/repository/everything/'
+        name 'codemc-repo'
+        url 'https://repo.codemc.io/repository/maven-public/'
     }
 
     maven {
         name 'jitpack-repo'
         url 'https://jitpack.io'
     }
+
+    flatDir {
+        dirs "$rootDir/libs/"
+    }
 }
 
 dependencies {
-    compile 'org.projectlombok:lombok:1.16.20'
+    compile 'org.projectlombok:lombok:1.18.22'
     compile 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
-    compile 'me.clip:placeholderapi:2.10.5'
-    compile ('be.maximvdw:MVdWPlaceholderAPI:3.0.1-SNAPSHOT') { transitive = false }
+    compile 'me.clip:placeholderapi:2.11.1'
+    compile (name: 'MVdWPlaceholderAPI-3.1.1') {
+        transitive = false
+    }
     compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.3.0'
-    compile 'com.github.Realizedd.Duels:duels-api:3.3.0'
+    compile 'com.github.Realizedd.Duels:duels-api:3.5.0'
     compile 'com.github.MilkBowl:VaultAPI:1.7'
 }
 

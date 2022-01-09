@@ -10,7 +10,6 @@ import me.realized.de.leaderboards.Lang;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HeadLeaderboard;
 import me.realized.de.leaderboards.leaderboard.leaderboards.HologramLeaderboard;
-import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.EnumUtil;
 import me.realized.de.leaderboards.util.TextBuilder;
 import me.realized.duels.api.Duels;
@@ -59,11 +58,6 @@ public class LeaderboardManager implements Listener {
                     final LeaderboardType type = EnumUtil.getByName(data[0].toUpperCase(), LeaderboardType.class);
 
                     if (type == null) {
-                        continue;
-                    }
-
-                    if (type == LeaderboardType.HOLOGRAM && CompatUtil.isPre1_8()) {
-                        extension.info("Skipping " + file.getName() + " from load - Hologram Leaderboards are not supported on this server version.");
                         continue;
                     }
 

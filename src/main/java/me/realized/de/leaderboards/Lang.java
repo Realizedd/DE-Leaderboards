@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 
 public enum Lang {
 
-    UNSUPPORTED("Hologram Leaderboards are not supported on &f1.7&7."),
     INVALID_LEADERBOARD_TYPE("&c''{0}'' is not a valid leaderboard type. Available: {1}"),
     NOT_LOOKING_AT_WALL_SIGN("&cYou must be looking at a sign that is attached to a block."),
     NOT_LOOKING_AT_SIGN("&cYou must be looking at a sign."),

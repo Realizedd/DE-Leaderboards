@@ -1,6 +1,6 @@
 package me.realized.de.leaderboards.hooks;
 
-import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.realized.de.leaderboards.Leaderboards;
 import me.realized.de.leaderboards.util.Updatable;
@@ -11,15 +11,12 @@ import org.bukkit.entity.Player;
 public class PlaceholderHook implements Updatable<Kit> {
 
     private final Leaderboards extension;
-    private final Duels api;
-
-    private me.clip.placeholderapi.PlaceholderHook previous;
+    private PlaceholderExpansion previous;
 
     public PlaceholderHook(final Leaderboards extension, final Duels api) {
         this.extension = extension;
-        this.api = api;
-        this.previous = PlaceholderAPI.getPlaceholders().get("duels");
-        PlaceholderAPI.unregisterPlaceholderHook(api);
+        this.previous = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion("duels");
+        previous.unregister();
         new PlaceholdersExpansion().register();
     }
 
@@ -31,11 +28,6 @@ public class PlaceholderHook implements Updatable<Kit> {
         @Override
         public String getIdentifier() {
             return "duels";
-        }
-
-        @Override
-        public String getPlugin() {
-            return api.getName();
         }
 
         @Override

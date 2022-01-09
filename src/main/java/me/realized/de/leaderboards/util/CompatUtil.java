@@ -1,13 +1,10 @@
 package me.realized.de.leaderboards.util;
 
-import lombok.Getter;
 import org.bukkit.Bukkit;
 
 public final class CompatUtil {
 
     private static final int SUB_VERSION;
-
-    @Getter
     private static final boolean MARKER;
 
     static {
@@ -19,10 +16,6 @@ public final class CompatUtil {
     }
 
     private CompatUtil() {}
-
-    public static boolean isPre1_8() {
-        return SUB_VERSION < 8;
-    }
 
     public static boolean isPre1_14() {
         return SUB_VERSION < 14;

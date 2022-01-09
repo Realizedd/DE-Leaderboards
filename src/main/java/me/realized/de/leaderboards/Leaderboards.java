@@ -9,7 +9,6 @@ import me.realized.de.leaderboards.hooks.MVdWPlaceholderHook;
 import me.realized.de.leaderboards.hooks.PlaceholderHook;
 import me.realized.de.leaderboards.hooks.VaultHook;
 import me.realized.de.leaderboards.leaderboard.LeaderboardManager;
-import me.realized.de.leaderboards.util.CompatUtil;
 import me.realized.de.leaderboards.util.NumberUtil;
 import me.realized.de.leaderboards.util.StringUtil;
 import me.realized.de.leaderboards.util.Updatable;
@@ -47,10 +46,6 @@ public class Leaderboards extends DuelsExtension implements Listener {
 
     @Override
     public void onEnable() {
-        if (CompatUtil.isPre1_8()) {
-            warn("ArmorStand is not supported on this server version. Hologram Leaderboard will be disabled.");
-        }
-
         this.userManager = api.getUserManager();
         this.kitManager = api.getKitManager();
         this.arenaManager = api.getArenaManager();
